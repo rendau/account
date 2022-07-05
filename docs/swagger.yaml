@@ -1,0 +1,756 @@
+definitions:
+  dopTypes.ErrRep:
+    properties:
+      desc:
+        type: string
+      error_code:
+        type: string
+      fields:
+        additionalProperties:
+          type: string
+        type: object
+    type: object
+  entities.AuthByTokenRepSt:
+    properties:
+      access_token:
+        type: string
+    type: object
+  entities.AuthByTokenReqSt:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+  entities.AuthRepSt:
+    properties:
+      access_token:
+        type: string
+      refresh_token:
+        type: string
+    type: object
+  entities.DicDataSt:
+    properties:
+      roles:
+        items:
+          $ref: '#/definitions/entities.RoleListSt'
+        type: array
+    type: object
+  entities.PermCUSt:
+    properties:
+      app:
+        type: string
+      dsc:
+        type: string
+      id:
+        type: string
+    type: object
+  entities.PermCreateRepSt:
+    properties:
+      id:
+        type: string
+    type: object
+  entities.PermListSt:
+    properties:
+      app:
+        type: string
+      dsc:
+        type: string
+      id:
+        type: string
+      is_system:
+        type: boolean
+    type: object
+  entities.PermSt:
+    properties:
+      app:
+        type: string
+      dsc:
+        type: string
+      id:
+        type: string
+      is_system:
+        type: boolean
+    type: object
+  entities.PhoneAndSmsCodeSt:
+    properties:
+      phone:
+        type: string
+      sms_code:
+        type: integer
+    type: object
+  entities.RoleCUSt:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      perms:
+        items:
+          type: string
+        type: array
+    type: object
+  entities.RoleCreateRepSt:
+    properties:
+      id:
+        type: string
+    type: object
+  entities.RoleListSt:
+    properties:
+      id:
+        type: string
+      is_system:
+        type: boolean
+      name:
+        type: string
+    type: object
+  entities.RoleSt:
+    properties:
+      id:
+        type: string
+      is_system:
+        type: boolean
+      name:
+        type: string
+      perms:
+        items:
+          type: string
+        type: array
+    type: object
+  entities.SendPhoneValidatingCodeReqSt:
+    properties:
+      err_ne:
+        type: boolean
+      phone:
+        type: string
+    type: object
+  entities.UsrCUSt:
+    properties:
+      ava:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+    type: object
+  entities.UsrCreateRepSt:
+    properties:
+      id:
+        type: integer
+    type: object
+  entities.UsrListRepSt:
+    properties:
+      page:
+        type: integer
+      page_size:
+        type: integer
+      results:
+        items:
+          $ref: '#/definitions/entities.UsrListSt'
+        type: array
+      total_count:
+        type: integer
+    type: object
+  entities.UsrListSt:
+    properties:
+      ava:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
+  entities.UsrProfileSt:
+    properties:
+      ava:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      perms:
+        items:
+          type: string
+        type: array
+      phone:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+    type: object
+  entities.UsrRegReqSt:
+    properties:
+      ava:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      sms_code:
+        type: integer
+    type: object
+  entities.UsrSt:
+    properties:
+      ava:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      perms:
+        items:
+          type: string
+        type: array
+      phone:
+        type: string
+      roles:
+        items:
+          type: string
+        type: array
+    type: object
+info:
+  contact: {}
+paths:
+  /dic:
+    get:
+      description: Get all dictionaries
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.DicDataSt'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      summary: dictionaries
+      tags:
+      - dic
+  /perm:
+    get:
+      parameters:
+      - in: query
+        name: app
+        type: string
+      - in: query
+        items:
+          type: string
+        name: cols
+        type: array
+      - in: query
+        items:
+          type: string
+        name: ids
+        type: array
+      - in: query
+        name: only_count
+        type: boolean
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: page_size
+        type: integer
+      - in: query
+        name: search
+        type: string
+      - in: query
+        items:
+          type: string
+        name: sort
+        type: array
+      - in: query
+        name: sort_name
+        type: string
+      - in: query
+        name: with_total_count
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.PermListSt'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - perm
+    post:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/entities.PermCUSt'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.PermCreateRepSt'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - perm
+  /perm/:id:
+    delete:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - perm
+    get:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.PermSt'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - perm
+    put:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/entities.PermCUSt'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - perm
+  /profile:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.UsrProfileSt'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - profile
+    put:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/entities.UsrCUSt'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - profile
+  /profile/auth:
+    post:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/entities.PhoneAndSmsCodeSt'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - profile
+  /profile/auth/token:
+    post:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/entities.AuthByTokenReqSt'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.AuthByTokenRepSt'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - profile
+  /profile/change_phone:
+    put:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/entities.PhoneAndSmsCodeSt'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - profile
+  /profile/logout:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - profile
+  /profile/reg:
+    post:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/entities.UsrRegReqSt'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.AuthRepSt'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - profile
+  /profile/send_validating_code:
+    post:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/entities.SendPhoneValidatingCodeReqSt'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - profile
+  /role:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entities.RoleListSt'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - role
+    post:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/entities.RoleCUSt'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.RoleCreateRepSt'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - role
+  /role/:id:
+    delete:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - role
+    get:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.RoleSt'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - role
+    put:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/entities.RoleCUSt'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - role
+  /usr:
+    get:
+      parameters:
+      - in: query
+        items:
+          type: string
+        name: cols
+        type: array
+      - in: query
+        name: id
+        type: integer
+      - in: query
+        items:
+          type: integer
+        name: ids
+        type: array
+      - in: query
+        name: only_count
+        type: boolean
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: page_size
+        type: integer
+      - in: query
+        name: search
+        type: string
+      - in: query
+        items:
+          type: string
+        name: sort
+        type: array
+      - in: query
+        name: sort_name
+        type: string
+      - in: query
+        name: with_total_count
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.UsrListRepSt'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - usr
+    post:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/entities.UsrCUSt'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.UsrCreateRepSt'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - usr
+  /usr/:id:
+    delete:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - usr
+    get:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.UsrSt'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - usr
+    put:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/entities.UsrCUSt'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - usr
+swagger: "2.0"
