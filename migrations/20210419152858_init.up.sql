@@ -72,11 +72,11 @@ $$
         values ('admin', 'Admin', true);
 
         -- perms
-        insert into perm(id, dsc, is_system)
-        values ('*', 'All permissions', true)
-             , ('m_perm', 'Modify permissions', true)
-             , ('m_role', 'Modify roles', true)
-             , ('m_usr', 'Modify users', true);
+        insert into perm(id, app, dsc, is_system)
+        values ('*', 'account', 'All permissions', true)
+             , ('m_perm', 'account', 'Modify permissions', true)
+             , ('m_role', 'account', 'Modify roles', true)
+             , ('m_usr', 'account', 'Modify users', true);
 
         -- Admin role_perm
         insert into role_perm(role_id, perm_id)

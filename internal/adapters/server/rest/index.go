@@ -65,23 +65,23 @@ func GetHandler(lg logger.Lite, ucs *usecases.St, withCors bool) http.Handler {
 	// role
 	r.GET("/role", s.hRoleList)
 	r.POST("/role", s.hRoleCreate)
-	r.GET("/role/{id:[^/]+}", s.hRoleGet)
-	r.PUT("/role/{id:[^/]+}", s.hRoleUpdate)
-	r.DELETE("/role/{id:[^/]+}", s.hRoleDelete)
+	r.GET("/role/:id", s.hRoleGet)
+	r.PUT("/role/:id", s.hRoleUpdate)
+	r.DELETE("/role/:id", s.hRoleDelete)
 
 	// usr
 	r.GET("/usr", s.hUsrList)
 	r.POST("/usr", s.hUsrCreate)
-	r.GET("/usr/{id:[0-9]+}", s.hUsrGet)
-	r.PUT("/usr/{id:[0-9]+}", s.hUsrUpdate)
-	r.DELETE("/usr/{id:[0-9]+}", s.hUsrDelete)
+	r.GET("/usr/:id", s.hUsrGet)
+	r.PUT("/usr/:id", s.hUsrUpdate)
+	r.DELETE("/usr/:id", s.hUsrDelete)
 
 	// perm
 	r.GET("/perm", s.hPermList)
 	r.POST("/perm", s.hPermCreate)
-	r.GET("/perm/{id:[^/]+}", s.hPermGet)
-	r.PUT("/perm/{id:[^/]+}", s.hPermUpdate)
-	r.DELETE("/perm/{id:[^/]+}", s.hPermDelete)
+	r.GET("/perm/:id", s.hPermGet)
+	r.PUT("/perm/:id", s.hPermUpdate)
+	r.DELETE("/perm/:id", s.hPermDelete)
 
 	return r
 }

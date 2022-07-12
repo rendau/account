@@ -3,7 +3,7 @@ package cns
 import "time"
 
 const (
-	AppName = "Auth"
+	AppName = "Account"
 
 	MaxPageSize = 1000
 )
