@@ -19,7 +19,7 @@ func (d *St) RoleGet(ctx context.Context, id string) (*entities.RoleSt, error) {
 			"perms": `(
 				select array_agg(distinct perm_id)
 				from role_perm
-				where role_id = t.id
+				where role_id = id
 			)`,
 		},
 		Conds: []string{"id = ${id}"},

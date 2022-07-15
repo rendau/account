@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/rendau/account/internal/domain/entities"
+	"github.com/rendau/account/internal/domain/errs"
 	"github.com/rendau/dop/dopErrs"
 )
 
@@ -16,7 +17,35 @@ func NewPerm(r *St) *Perm {
 }
 
 func (c *Perm) ValidateCU(ctx context.Context, obj *entities.PermCUSt, id string) error {
-	// forCreate := id == ""
+	forCreate := id == ""
+
+	if forCreate && obj.Id == nil {
+		return errs.IdRequired
+	}
+	if obj.Id != nil {
+		if *obj.Id == "" {
+			return errs.IdRequired
+		}
+
+		if id != *obj.Id {
+			exists, err := c.IdExists(ctx, *obj.Id)
+			if err != nil {
+				return err
+			}
+			if exists {
+				return errs.IdAlreadyExists
+			}
+		}
+	}
+
+	if forCreate && obj.App == nil {
+		return errs.ApplicationRequired
+	}
+	if obj.App != nil {
+		if *obj.App == "" {
+			return errs.ApplicationRequired
+		}
+	}
 
 	return nil
 }

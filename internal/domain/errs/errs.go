@@ -5,6 +5,9 @@ import (
 )
 
 const (
+	IdRequired           = dopErrs.Err("id_required")
+	IdAlreadyExists      = dopErrs.Err("id_already_exists")
+	ApplicationRequired  = dopErrs.Err("application_required")
 	RoleRequired         = dopErrs.Err("role_required")
 	BadRole              = dopErrs.Err("bad_role")
 	PhoneRequired        = dopErrs.Err("phone_required")

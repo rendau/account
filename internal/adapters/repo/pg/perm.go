@@ -50,7 +50,7 @@ func (d *St) PermList(ctx context.Context, pars *entities.PermListParsSt) ([]*en
 		LPars:        pars.ListParams,
 		Conds:        conds,
 		Args:         args,
-		AllowedSorts: map[string]string{"default": "id"},
+		AllowedSorts: map[string]string{"default": "is_system, app, id"},
 	})
 	if err != nil {
 		return nil, err

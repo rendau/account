@@ -2,6 +2,7 @@ package tests
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"github.com/rendau/account/internal/cns"
@@ -33,12 +34,15 @@ func resetDb() {
 		perm2Id,
 		perm3Id,
 	}
+	application := "application1"
 	for _, permId := range perms {
 		_, err = app.core.Perm.Create(bgCtx, &entities.PermCUSt{
 			Id:  &permId,
+			App: &application,
 			Dsc: &permId,
 		})
 		if err != nil {
+			fmt.Println(permId)
 			app.lg.Fatal(err)
 		}
 	}
