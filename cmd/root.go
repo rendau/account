@@ -124,7 +124,7 @@ func Execute() {
 	docs.SwaggerInfo.Host = conf.SwagHost
 	docs.SwaggerInfo.BasePath = conf.SwagBasePath
 	docs.SwaggerInfo.Schemes = []string{conf.SwagSchema}
-	docs.SwaggerInfo.Title = "Limelog service"
+	docs.SwaggerInfo.Title = "Account service"
 
 	// START
 
