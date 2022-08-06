@@ -14,7 +14,7 @@ import (
 // @Tags     usr
 // @Param    query  query  entities.UsrListParsSt  false  "query"
 // @Produce  json
-// @Success  200  {object}  entities.UsrListRepSt
+// @Success  200  {object}  dopTypes.PaginatedListRep{results=[]entities.UsrListSt}
 // @Failure  400  {object}  dopTypes.ErrRep
 func (o *St) hUsrList(c *gin.Context) {
 	pars := &entities.UsrListParsSt{}
@@ -27,13 +27,11 @@ func (o *St) hUsrList(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, entities.UsrListRepSt{
-		PaginatedListRep: dopTypes.PaginatedListRep{
-			Page:       pars.Page,
-			PageSize:   pars.PageSize,
-			TotalCount: tCount,
-		},
-		Results: result,
+	c.JSON(http.StatusOK, dopTypes.PaginatedListRep{
+		Page:       pars.Page,
+		PageSize:   pars.PageSize,
+		TotalCount: tCount,
+		Results:    result,
 	})
 }
 
@@ -41,7 +39,7 @@ func (o *St) hUsrList(c *gin.Context) {
 // @Tags     usr
 // @Param    body  body  entities.UsrCUSt  false  "body"
 // @Produce  json
-// @Success  200  {object}  entities.UsrCreateRepSt
+// @Success  200  {object}  dopTypes.CreateRep{id=int}
 // @Failure  400  {object}  dopTypes.ErrRep
 func (o *St) hUsrCreate(c *gin.Context) {
 	reqObj := &entities.UsrCUSt{}
@@ -54,7 +52,7 @@ func (o *St) hUsrCreate(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, entities.UsrCreateRepSt{Id: newId})
+	c.JSON(http.StatusOK, gin.H{"id": newId})
 }
 
 // @Router   /usr/:id [get]

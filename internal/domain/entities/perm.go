@@ -28,7 +28,3 @@ type PermCUSt struct {
 	App *string `json:"app" db:"app"`
 	Dsc *string `json:"dsc" db:"dsc"`
 }
-
-type PermCreateRepSt struct {
-	Id string `json:"id"`
-}

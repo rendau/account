@@ -26,7 +26,7 @@ func (o *St) hRoleList(c *gin.Context) {
 // @Tags     role
 // @Param    body  body  entities.RoleCUSt  false  "body"
 // @Produce  json
-// @Success  200  {object}  entities.RoleCreateRepSt
+// @Success  200  {object}  dopTypes.CreateRep{id=string}
 // @Failure  400  {object}  dopTypes.ErrRep
 func (o *St) hRoleCreate(c *gin.Context) {
 	reqObj := &entities.RoleCUSt{}
@@ -39,7 +39,7 @@ func (o *St) hRoleCreate(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, entities.RoleCreateRepSt{Id: result})
+	c.JSON(http.StatusOK, gin.H{"id": result})
 }
 
 // @Router   /role/:id [get]

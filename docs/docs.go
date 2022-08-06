@@ -150,7 +150,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.PermCreateRepSt"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dopTypes.CreateRep"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -541,7 +553,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.RoleCreateRepSt"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dopTypes.CreateRep"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -723,7 +747,22 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.UsrListRepSt"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dopTypes.PaginatedListRep"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "results": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/entities.UsrListSt"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -755,7 +794,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/entities.UsrCreateRepSt"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dopTypes.CreateRep"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
@@ -866,6 +917,14 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dopTypes.CreateRep": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "any"
+                }
+            }
+        },
         "dopTypes.ErrRep": {
             "type": "object",
             "properties": {
@@ -880,6 +939,23 @@ const docTemplate = `{
                     "additionalProperties": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "dopTypes.PaginatedListRep": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "page_size": {
+                    "type": "integer"
+                },
+                "results": {
+                    "type": "any"
+                },
+                "total_count": {
+                    "type": "integer"
                 }
             }
         },
@@ -930,14 +1006,6 @@ const docTemplate = `{
                 "dsc": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
-        "entities.PermCreateRepSt": {
-            "type": "object",
-            "properties": {
                 "id": {
                     "type": "string"
                 }
@@ -1005,14 +1073,6 @@ const docTemplate = `{
                 }
             }
         },
-        "entities.RoleCreateRepSt": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
         "entities.RoleListSt": {
             "type": "object",
             "properties": {
@@ -1075,34 +1135,6 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
-                }
-            }
-        },
-        "entities.UsrCreateRepSt": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "entities.UsrListRepSt": {
-            "type": "object",
-            "properties": {
-                "page": {
-                    "type": "integer"
-                },
-                "page_size": {
-                    "type": "integer"
-                },
-                "results": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/entities.UsrListSt"
-                    }
-                },
-                "total_count": {
-                    "type": "integer"
                 }
             }
         },

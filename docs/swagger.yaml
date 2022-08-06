@@ -1,4 +1,9 @@
 definitions:
+  dopTypes.CreateRep:
+    properties:
+      id:
+        type: any
+    type: object
   dopTypes.ErrRep:
     properties:
       desc:
@@ -9,6 +14,17 @@ definitions:
         additionalProperties:
           type: string
         type: object
+    type: object
+  dopTypes.PaginatedListRep:
+    properties:
+      page:
+        type: integer
+      page_size:
+        type: integer
+      results:
+        type: any
+      total_count:
+        type: integer
     type: object
   entities.AuthByTokenRepSt:
     properties:
@@ -40,11 +56,6 @@ definitions:
         type: string
       dsc:
         type: string
-      id:
-        type: string
-    type: object
-  entities.PermCreateRepSt:
-    properties:
       id:
         type: string
     type: object
@@ -88,11 +99,6 @@ definitions:
           type: string
         type: array
     type: object
-  entities.RoleCreateRepSt:
-    properties:
-      id:
-        type: string
-    type: object
   entities.RoleListSt:
     properties:
       id:
@@ -134,24 +140,6 @@ definitions:
         items:
           type: string
         type: array
-    type: object
-  entities.UsrCreateRepSt:
-    properties:
-      id:
-        type: integer
-    type: object
-  entities.UsrListRepSt:
-    properties:
-      page:
-        type: integer
-      page_size:
-        type: integer
-      results:
-        items:
-          $ref: '#/definitions/entities.UsrListSt'
-        type: array
-      total_count:
-        type: integer
     type: object
   entities.UsrListSt:
     properties:
@@ -306,7 +294,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.PermCreateRepSt'
+            allOf:
+            - $ref: '#/definitions/dopTypes.CreateRep'
+            - properties:
+                id:
+                  type: string
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -550,7 +543,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.RoleCreateRepSt'
+            allOf:
+            - $ref: '#/definitions/dopTypes.CreateRep'
+            - properties:
+                id:
+                  type: string
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -664,7 +662,14 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.UsrListRepSt'
+            allOf:
+            - $ref: '#/definitions/dopTypes.PaginatedListRep'
+            - properties:
+                results:
+                  items:
+                    $ref: '#/definitions/entities.UsrListSt'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
@@ -684,7 +689,12 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entities.UsrCreateRepSt'
+            allOf:
+            - $ref: '#/definitions/dopTypes.CreateRep'
+            - properties:
+                id:
+                  type: integer
+              type: object
         "400":
           description: Bad Request
           schema:

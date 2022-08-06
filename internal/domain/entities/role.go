@@ -20,7 +20,3 @@ type RoleCUSt struct {
 
 	Perms []string `json:"perms"`
 }
-
-type RoleCreateRepSt struct {
-	Id string `json:"id"`
-}

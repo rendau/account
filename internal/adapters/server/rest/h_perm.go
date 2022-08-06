@@ -32,7 +32,7 @@ func (o *St) hPermList(c *gin.Context) {
 // @Tags     perm
 // @Param    body  body  entities.PermCUSt  false  "body"
 // @Produce  json
-// @Success  200  {object}  entities.PermCreateRepSt
+// @Success  200  {object}  dopTypes.CreateRep{id=string}
 // @Failure  400  {object}  dopTypes.ErrRep
 func (o *St) hPermCreate(c *gin.Context) {
 	reqObj := &entities.PermCUSt{}
@@ -45,7 +45,7 @@ func (o *St) hPermCreate(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, entities.PermCreateRepSt{Id: id})
+	c.JSON(http.StatusOK, gin.H{"id": id})
 }
 
 // @Router   /perm/:id [get]

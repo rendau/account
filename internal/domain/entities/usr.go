@@ -43,21 +43,12 @@ type UsrListParsSt struct {
 	Search *string  `json:"search" form:"search"`
 }
 
-type UsrListRepSt struct {
-	dopTypes.PaginatedListRep
-	Results []*UsrListSt `json:"results"`
-}
-
 type UsrCUSt struct {
 	Phone *string `json:"phone" db:"phone"`
 	Name  *string `json:"name" db:"name"`
 	Ava   *string `json:"ava" db:"ava"`
 
 	Roles []string `json:"roles"`
-}
-
-type UsrCreateRepSt struct {
-	Id int64 `json:"id"`
 }
 
 type PhoneAndSmsCodeSt struct {

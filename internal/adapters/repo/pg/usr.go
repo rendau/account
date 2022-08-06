@@ -123,11 +123,8 @@ func (d *St) UsrIdExists(ctx context.Context, id int64) (bool, error) {
 		from usr
 		where id = $1
 	`, id).Scan(&cnt)
-	if err != nil {
-		return false, err
-	}
 
-	return cnt > 0, nil
+	return cnt > 0, err
 }
 
 func (d *St) UsrIdsExists(ctx context.Context, ids []int64) (bool, error) {
@@ -139,11 +136,8 @@ func (d *St) UsrIdsExists(ctx context.Context, ids []int64) (bool, error) {
 			left join usr u on u.id = x.id
 		where u.id is null
 	`, ids).Scan(&cnt)
-	if err != nil {
-		return false, err
-	}
 
-	return cnt == 0, nil
+	return cnt == 0, err
 }
 
 func (d *St) UsrPhoneExists(ctx context.Context, phone string, excludeId int64) (bool, error) {
@@ -155,11 +149,8 @@ func (d *St) UsrPhoneExists(ctx context.Context, phone string, excludeId int64) 
 		where phone = $1
 			and id != $2
 	`, phone, excludeId).Scan(&cnt)
-	if err != nil {
-		return false, err
-	}
 
-	return cnt > 0, nil
+	return cnt > 0, err
 }
 
 func (d *St) UsrGetToken(ctx context.Context, id int64) (string, error) {
@@ -170,22 +161,12 @@ func (d *St) UsrGetToken(ctx context.Context, id int64) (string, error) {
 		from usr
 		where id = $1
 	`, id).Scan(&token)
-	if err != nil {
-		return "", err
-	}
 
-	return token, nil
+	return token, err
 }
 
 func (d *St) UsrSetToken(ctx context.Context, id int64, token string) error {
-	err := d.DbExec(ctx, `
-		update usr set token = $2 where id = $1
-	`, id, token)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return d.DbExec(ctx, `update usr set token = $2 where id = $1`, id, token)
 }
 
 func (d *St) UsrGetRoleIds(ctx context.Context, id int64) ([]string, error) {
@@ -196,11 +177,8 @@ func (d *St) UsrGetRoleIds(ctx context.Context, id int64) ([]string, error) {
 		from usr_role
 		where usr_id = $1
 	`, id).Scan(&result)
-	if err != nil {
-		return nil, err
-	}
 
-	return result, nil
+	return result, err
 }
 
 func (d *St) UsrGetPermIds(ctx context.Context, id int64) ([]string, error) {
@@ -212,11 +190,8 @@ func (d *St) UsrGetPermIds(ctx context.Context, id int64) ([]string, error) {
 			join role_perm rp on rp.role_id = ur.role_id
 		where ur.usr_id = $1
 	`, id).Scan(&result)
-	if err != nil {
-		return nil, err
-	}
 
-	return result, nil
+	return result, err
 }
 
 func (d *St) UsrGetPhone(ctx context.Context, id int64) (string, error) {
@@ -227,11 +202,8 @@ func (d *St) UsrGetPhone(ctx context.Context, id int64) (string, error) {
 		from usr
 		where id = $1
 	`, id).Scan(&result)
-	if err != nil {
-		return "", err
-	}
 
-	return result, nil
+	return result, err
 }
 
 func (d *St) UsrGetIdForPhone(ctx context.Context, phone string) (int64, error) {
