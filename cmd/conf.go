@@ -29,6 +29,9 @@ func confLoad() {
 	viper.SetDefault("DEBUG", "false")
 	viper.SetDefault("LOG_LEVEL", "info")
 	viper.SetDefault("HTTP_LISTEN", ":80")
+	viper.SetDefault("SWAG_HOST", "example.com")
+	viper.SetDefault("SWAG_BASE_PATH", "/")
+	viper.SetDefault("SWAG_SCHEMA", "https")
 	viper.SetDefault("REDIS_KEY_PREFIX", "account_")
 
 	viper.SetConfigFile("conf.yml")

@@ -69,10 +69,7 @@ func Execute() {
 
 	app.repo = pg.New(app.db, app.lg)
 
-	app.ucs = usecases.New(
-		app.lg,
-		app.db,
-	)
+	app.ucs = usecases.New(app.lg, app.db)
 
 	if conf.MsJwtsUrl == "" {
 		app.jwts = dopJwtMock.New(app.lg, false)
