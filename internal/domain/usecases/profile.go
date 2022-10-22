@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/rendau/account/internal/domain/entities"
+	"github.com/rendau/dop/dopErrs"
 )
 
 func (u *St) ProfileSendPhoneValidatingCode(ctx context.Context,
@@ -65,7 +66,14 @@ func (u *St) ProfileGet(ctx context.Context) (*entities.UsrProfileSt, error) {
 		return nil, err
 	}
 
-	return u.cr.Usr.GetProfile(ctx, ses.Id)
+	result, err := u.cr.Usr.GetProfile(ctx, ses.Id)
+	if err != nil {
+		if err == dopErrs.ObjectNotFound {
+			err = dopErrs.NotAuthorized
+		}
+	}
+
+	return result, err
 }
 
 func (u *St) ProfileUpdate(ctx context.Context,
