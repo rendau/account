@@ -75,15 +75,15 @@ func Execute() {
 		app.jwts = dopJwtMock.New(app.lg, false)
 	} else {
 		app.jwts = dopJwts.New(
-			httpclient.New(app.lg, httpc.OptionsSt{
+			httpclient.New(app.lg, &httpc.OptionsSt{
 				Client: &http.Client{
 					Timeout: 10 * time.Second,
 					Transport: &http.Transport{
 						TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 					},
 				},
-				BaseUrl:       conf.MsJwtsUrl,
-				BaseLogPrefix: "JWT: ",
+				Uri:       conf.MsJwtsUrl,
+				LogPrefix: "JWT: ",
 			}),
 		)
 	}
@@ -92,15 +92,15 @@ func Execute() {
 		app.sms = dopSmsMock.New(app.lg, false)
 	} else {
 		app.sms = dopSmss.New(
-			httpclient.New(app.lg, httpc.OptionsSt{
+			httpclient.New(app.lg, &httpc.OptionsSt{
 				Client: &http.Client{
 					Timeout: 10 * time.Second,
 					Transport: &http.Transport{
 						TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 					},
 				},
-				BaseUrl:       conf.MsSmsUrl,
-				BaseLogPrefix: "SMS: ",
+				Uri:       conf.MsSmsUrl,
+				LogPrefix: "SMS: ",
 			}),
 		)
 	}
