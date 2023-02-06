@@ -13,10 +13,11 @@ type UsrSt struct {
 	Ava       string    `json:"ava" db:"ava"`
 	Name      string    `json:"name" db:"name"`
 
-	RoleIds []int64       `json:"role_ids" db:"role_ids"`
-	Roles   []*RoleListSt `json:"roles" db:"roles"`
-	PermIds []int64       `json:"perm_ids" db:"perm_ids"`
-	Perms   []*PermSt     `json:"perms" db:"perms"`
+	RoleIds []int64 `json:"role_ids" db:"role_ids"`
+	PermIds []int64 `json:"perm_ids" db:"perm_ids"`
+
+	Roles []*RoleListSt `json:"roles"`
+	Perms []*PermSt     `json:"perms"`
 }
 
 type UsrGetParsSt struct {
