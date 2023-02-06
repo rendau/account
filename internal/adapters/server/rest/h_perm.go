@@ -2,6 +2,7 @@ package rest
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rendau/account/internal/domain/entities"
@@ -55,7 +56,7 @@ func (o *St) hPermCreate(c *gin.Context) {
 // @Success  200  {object}  entities.PermSt
 // @Failure  400  {object}  dopTypes.ErrRep
 func (o *St) hPermGet(c *gin.Context) {
-	id := c.Param("id")
+	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
 	result, err := o.ucs.PermGet(o.getRequestContext(c), id)
 	if dopHttps.Error(c, err) {
@@ -73,7 +74,7 @@ func (o *St) hPermGet(c *gin.Context) {
 // @Success  200
 // @Failure  400  {object}  dopTypes.ErrRep
 func (o *St) hPermUpdate(c *gin.Context) {
-	id := c.Param("id")
+	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
 	reqObj := &entities.PermCUSt{}
 	if !dopHttps.BindJSON(c, reqObj) {
@@ -90,7 +91,7 @@ func (o *St) hPermUpdate(c *gin.Context) {
 // @Success  200
 // @Failure  400  {object}  dopTypes.ErrRep
 func (o *St) hPermDelete(c *gin.Context) {
-	id := c.Param("id")
+	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
 	dopHttps.Error(c, o.ucs.PermDelete(o.getRequestContext(c), id))
 }

@@ -19,7 +19,7 @@ func (c *Dic) Get(ctx context.Context) (*entities.DicDataSt, error) {
 
 	data := &entities.DicDataSt{}
 
-	data.Roles, err = c.r.Role.List(ctx)
+	data.Roles, err = c.r.Role.List(ctx, &entities.RoleListParsSt{})
 	if err != nil {
 		return nil, err
 	}

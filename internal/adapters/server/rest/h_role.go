@@ -2,6 +2,7 @@ package rest
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rendau/account/internal/domain/entities"
@@ -10,11 +11,17 @@ import (
 
 // @Router   /role [get]
 // @Tags     role
+// @Param    query  query  entities.RoleListParsSt  false  "query"
 // @Produce  json
 // @Success  200  {array}   entities.RoleListSt
 // @Failure  400  {object}  dopTypes.ErrRep
 func (o *St) hRoleList(c *gin.Context) {
-	result, err := o.ucs.RoleList(o.getRequestContext(c))
+	pars := &entities.RoleListParsSt{}
+	if !dopHttps.BindQuery(c, pars) {
+		return
+	}
+
+	result, err := o.ucs.RoleList(o.getRequestContext(c), pars)
 	if dopHttps.Error(c, err) {
 		return
 	}
@@ -49,7 +56,7 @@ func (o *St) hRoleCreate(c *gin.Context) {
 // @Success  200  {object}  entities.RoleSt
 // @Failure  400  {object}  dopTypes.ErrRep
 func (o *St) hRoleGet(c *gin.Context) {
-	id := c.Param("id")
+	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
 	result, err := o.ucs.RoleGet(o.getRequestContext(c), id)
 	if dopHttps.Error(c, err) {
@@ -67,7 +74,7 @@ func (o *St) hRoleGet(c *gin.Context) {
 // @Success  200
 // @Failure  400  {object}  dopTypes.ErrRep
 func (o *St) hRoleUpdate(c *gin.Context) {
-	id := c.Param("id")
+	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
 	reqObj := &entities.RoleCUSt{}
 	if !dopHttps.BindJSON(c, reqObj) {
@@ -84,7 +91,7 @@ func (o *St) hRoleUpdate(c *gin.Context) {
 // @Success  200
 // @Failure  400  {object}  dopTypes.ErrRep
 func (o *St) hRoleDelete(c *gin.Context) {
-	id := c.Param("id")
+	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
 	dopHttps.Error(c, o.ucs.RoleDelete(o.getRequestContext(c), id))
 }

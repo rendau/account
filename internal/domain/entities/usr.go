@@ -85,3 +85,19 @@ type AuthByTokenReqSt struct {
 type AuthByTokenRepSt struct {
 	AccessToken string `json:"access_token"`
 }
+
+func (u *UsrSt) GetRoleCodes() []string {
+	res := make([]string, len(u.Roles))
+	for i, r := range u.Roles {
+		res[i] = r.Code
+	}
+	return res
+}
+
+func (u *UsrSt) GetPermCodes() []string {
+	res := make([]string, len(u.Perms))
+	for i, p := range u.Perms {
+		res[i] = p.Code
+	}
+	return res
+}

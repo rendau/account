@@ -326,7 +326,9 @@ func (c *Usr) Auth(ctx context.Context, obj *entities.PhoneAndSmsCodeSt) (string
 	}
 
 	usr, err := c.Get(ctx, &entities.UsrGetParsSt{
-		Phone: &obj.Phone,
+		Phone:     &obj.Phone,
+		WithRoles: true,
+		WithPerms: true,
 	}, true)
 	if err != nil {
 		return "", "", err
@@ -346,8 +348,8 @@ func (c *Usr) Auth(ctx context.Context, obj *entities.PhoneAndSmsCodeSt) (string
 
 	accessToken, err := c.r.Session.CreateToken(&entities.Session{
 		Id:    usr.Id,
-		Roles: usr.RoleIds,
-		Perms: usr.PermIds,
+		Roles: usr.GetRoleCodes(),
+		Perms: usr.GetPermCodes(),
 	})
 	if err != nil {
 		return "", "", err
@@ -364,7 +366,11 @@ func (c *Usr) AuthByRefreshToken(ctx context.Context, refreshToken string) (stri
 		return "", dopErrs.NotAuthorized
 	}
 
-	usr, err := c.Get(ctx, &entities.UsrGetParsSt{Token: &refreshToken}, false)
+	usr, err := c.Get(ctx, &entities.UsrGetParsSt{
+		Token:     &refreshToken,
+		WithRoles: true,
+		WithPerms: true,
+	}, false)
 	if err != nil {
 		return "", err
 	}
@@ -375,8 +381,8 @@ func (c *Usr) AuthByRefreshToken(ctx context.Context, refreshToken string) (stri
 
 	accessToken, err := c.r.Session.CreateToken(&entities.Session{
 		Id:    usr.Id,
-		Roles: usr.RoleIds,
-		Perms: usr.PermIds,
+		Roles: usr.GetRoleCodes(),
+		Perms: usr.GetPermCodes(),
 	})
 	if err != nil {
 		return "", err
@@ -416,7 +422,9 @@ func (c *Usr) Reg(ctx context.Context, data *entities.UsrRegReqSt) (string, stri
 	}
 
 	newUsr, err := c.Get(ctx, &entities.UsrGetParsSt{
-		Id: &id,
+		Id:        &id,
+		WithRoles: true,
+		WithPerms: true,
 	}, true)
 	if err != nil {
 		return "", "", err
@@ -429,8 +437,8 @@ func (c *Usr) Reg(ctx context.Context, data *entities.UsrRegReqSt) (string, stri
 
 	accessToken, err := c.r.Session.CreateToken(&entities.Session{
 		Id:    newUsr.Id,
-		Roles: newUsr.RoleIds,
-		Perms: newUsr.PermIds,
+		Roles: newUsr.GetRoleCodes(),
+		Perms: newUsr.GetPermCodes(),
 	})
 	if err != nil {
 		return "", "", err

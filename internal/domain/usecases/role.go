@@ -7,7 +7,8 @@ import (
 	"github.com/rendau/account/internal/domain/entities"
 )
 
-func (u *St) RoleList(ctx context.Context) ([]*entities.RoleListSt, error) {
+func (u *St) RoleList(ctx context.Context,
+	pars *entities.RoleListParsSt) ([]*entities.RoleListSt, error) {
 	var err error
 
 	ses := u.SessionGetFromContext(ctx)
@@ -16,10 +17,11 @@ func (u *St) RoleList(ctx context.Context) ([]*entities.RoleListSt, error) {
 		return nil, err
 	}
 
-	return u.cr.Role.List(ctx)
+	return u.cr.Role.List(ctx, pars)
 }
 
-func (u *St) RoleGet(ctx context.Context, id string) (*entities.RoleSt, error) {
+func (u *St) RoleGet(ctx context.Context,
+	id int64) (*entities.RoleSt, error) {
 	var err error
 
 	ses := u.SessionGetFromContext(ctx)
@@ -52,7 +54,7 @@ func (u *St) RoleCreate(ctx context.Context,
 }
 
 func (u *St) RoleUpdate(ctx context.Context,
-	id string, obj *entities.RoleCUSt) error {
+	id int64, obj *entities.RoleCUSt) error {
 	var err error
 
 	ses := u.SessionGetFromContext(ctx)
@@ -67,7 +69,7 @@ func (u *St) RoleUpdate(ctx context.Context,
 }
 
 func (u *St) RoleDelete(ctx context.Context,
-	id string) error {
+	id int64) error {
 	var err error
 
 	ses := u.SessionGetFromContext(ctx)

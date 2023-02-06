@@ -20,7 +20,8 @@ func (u *St) PermList(ctx context.Context,
 	return u.cr.Perm.List(ctx, pars)
 }
 
-func (u *St) PermGet(ctx context.Context, id string) (*entities.PermSt, error) {
+func (u *St) PermGet(ctx context.Context,
+	id int64) (*entities.PermSt, error) {
 	// var err error
 	//
 	// ses := u.SessionGetFromContext(ctx)
@@ -53,7 +54,7 @@ func (u *St) PermCreate(ctx context.Context,
 }
 
 func (u *St) PermUpdate(ctx context.Context,
-	id string, obj *entities.PermCUSt) error {
+	id int64, obj *entities.PermCUSt) error {
 	var err error
 
 	ses := u.SessionGetFromContext(ctx)
@@ -68,7 +69,7 @@ func (u *St) PermUpdate(ctx context.Context,
 }
 
 func (u *St) PermDelete(ctx context.Context,
-	id string) error {
+	id int64) error {
 	var err error
 
 	ses := u.SessionGetFromContext(ctx)
