@@ -9,7 +9,7 @@ import (
 	"github.com/rendau/dop/dopErrs"
 )
 
-func (d *St) PermGet(ctx context.Context, id string) (*entities.PermSt, error) {
+func (d *St) PermGet(ctx context.Context, id int64) (*entities.PermSt, error) {
 	result := &entities.PermSt{}
 
 	err := d.HfGet(ctx, db.RDBGetOptions{
@@ -28,21 +28,21 @@ func (d *St) PermGet(ctx context.Context, id string) (*entities.PermSt, error) {
 	return result, nil
 }
 
-func (d *St) PermList(ctx context.Context, pars *entities.PermListParsSt) ([]*entities.PermListSt, error) {
+func (d *St) PermList(ctx context.Context, pars *entities.PermListParsSt) ([]*entities.PermSt, error) {
 	conds := make([]string, 0)
-	args := map[string]interface{}{}
+	args := map[string]any{}
 
 	// filter
 	if pars.Ids != nil {
-		conds = append(conds, `id in (select * from unnest(${ids} :: text[]))`)
+		conds = append(conds, `id in (select * from unnest(${ids} :: bigint[]))`)
 		args["ids"] = *pars.Ids
 	}
-	if pars.App != nil {
-		conds = append(conds, `app = ${app}`)
-		args["app"] = *pars.App
+	if pars.AppId != nil {
+		conds = append(conds, `app_id = ${app_id}`)
+		args["app_id"] = *pars.AppId
 	}
 
-	result := make([]*entities.PermListSt, 0)
+	result := make([]*entities.PermSt, 0)
 
 	_, err := d.HfList(ctx, db.RDBListOptions{
 		Dst:          &result,
@@ -50,7 +50,7 @@ func (d *St) PermList(ctx context.Context, pars *entities.PermListParsSt) ([]*en
 		LPars:        pars.ListParams,
 		Conds:        conds,
 		Args:         args,
-		AllowedSorts: map[string]string{"default": "is_system, app, id"},
+		AllowedSorts: map[string]string{"default": "is_system, app_id, code"},
 	})
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func (d *St) PermList(ctx context.Context, pars *entities.PermListParsSt) ([]*en
 	return result, nil
 }
 
-func (d *St) PermIdExists(ctx context.Context, id string) (bool, error) {
+func (d *St) PermIdExists(ctx context.Context, id int64) (bool, error) {
 	var cnt int
 
 	err := d.DbQueryRow(ctx, `
@@ -90,7 +90,7 @@ func (d *St) PermCreate(ctx context.Context, obj *entities.PermCUSt) (string, er
 	return result, nil
 }
 
-func (d *St) PermUpdate(ctx context.Context, id string, obj *entities.PermCUSt) error {
+func (d *St) PermUpdate(ctx context.Context, id int64, obj *entities.PermCUSt) error {
 	return d.HfUpdate(ctx, db.RDBUpdateOptions{
 		Table: "perm",
 		Obj:   obj,
@@ -99,7 +99,7 @@ func (d *St) PermUpdate(ctx context.Context, id string, obj *entities.PermCUSt) 
 	})
 }
 
-func (d *St) PermDelete(ctx context.Context, id string) error {
+func (d *St) PermDelete(ctx context.Context, id int64) error {
 	return d.HfDelete(ctx, db.RDBDeleteOptions{
 		Table: "perm",
 		Conds: []string{"id = ${cond_id}"},

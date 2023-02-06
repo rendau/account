@@ -48,8 +48,8 @@ func resetDb() {
 	}
 
 	roles := []entities.RoleCUSt{
-		{Id: &role1Id, Name: &role1Name, Perms: role1Perms},
-		{Id: &role2Id, Name: &role2Name, Perms: role2Perms},
+		{Id: &role1Id, Name: &role1Name, PermIds: role1Perms},
+		{Id: &role2Id, Name: &role2Name, PermIds: role2Perms},
 	}
 	for _, role := range roles {
 		_, err = app.core.Role.Create(bgCtx, &role)
@@ -69,9 +69,9 @@ func resetDb() {
 	}
 	for _, usr := range usrs {
 		*usr.IdPtr, err = app.core.Usr.Create(bgCtx, &entities.UsrCUSt{
-			Roles: usr.Roles,
-			Name:  &usr.Name,
-			Phone: &usr.Phone,
+			RoleIds: usr.Roles,
+			Name:    &usr.Name,
+			Phone:   &usr.Phone,
 		})
 		if err != nil {
 			app.lg.Fatal(err)

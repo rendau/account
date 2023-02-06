@@ -87,7 +87,7 @@ func (u *St) ProfileUpdate(ctx context.Context,
 	}
 
 	// restrict
-	obj.Roles = nil
+	obj.RoleIds = nil
 	obj.Phone = nil
 
 	return u.db.TransactionFn(ctx, func(ctx context.Context) error {

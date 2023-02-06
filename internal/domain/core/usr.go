@@ -175,7 +175,12 @@ func (c *Usr) RemovePhoneValidatingCache(ctx context.Context, phone string) {
 }
 
 func (c *Usr) List(ctx context.Context, pars *entities.UsrListParsSt) ([]*entities.UsrListSt, int64, error) {
-	return c.r.repo.UsrList(ctx, pars)
+	result, tCount, err := c.r.repo.UsrList(ctx, pars)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return result, tCount, nil
 }
 
 func (c *Usr) ListOne(ctx context.Context, id int64) (*entities.UsrListSt, error) {
@@ -214,6 +219,19 @@ func (c *Usr) Get(ctx context.Context, pars *entities.UsrGetParsSt, errNE bool) 
 		return nil, nil
 	}
 
+	if pars.WithRoles {
+		result.Roles, err = c.r.Role.List(ctx, &entities.RoleListParsSt{Ids: &result.RoleIds})
+		if err != nil {
+			return nil, err
+		}
+	}
+	if pars.WithPerms {
+		result.Perms, err = c.r.Perm.List(ctx, &entities.PermListParsSt{Ids: &result.PermIds})
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return result, nil
 }
 
@@ -237,7 +255,7 @@ func (c *Usr) GenerateAndSaveToken(ctx context.Context, id int64) (string, error
 	token, _ := c.r.jwts.Create(
 		strconv.FormatInt(id, 10),
 		refreshTokenDur,
-		map[string]interface{}{},
+		map[string]any{},
 	)
 
 	err := c.SetToken(ctx, id, token)
@@ -261,11 +279,11 @@ func (c *Usr) ResetToken(ctx context.Context, id int64) error {
 	return c.SetToken(ctx, id, "")
 }
 
-func (c *Usr) GetRoleIds(ctx context.Context, id int64) ([]string, error) {
+func (c *Usr) GetRoleIds(ctx context.Context, id int64) ([]int64, error) {
 	return c.r.repo.UsrGetRoleIds(ctx, id)
 }
 
-func (c *Usr) GetPermIds(ctx context.Context, id int64) ([]string, error) {
+func (c *Usr) GetPermIds(ctx context.Context, id int64) ([]int64, error) {
 	return c.r.repo.UsrGetPermIds(ctx, id)
 }
 
@@ -328,8 +346,8 @@ func (c *Usr) Auth(ctx context.Context, obj *entities.PhoneAndSmsCodeSt) (string
 
 	accessToken, err := c.r.Session.CreateToken(&entities.Session{
 		Id:    usr.Id,
-		Roles: usr.Roles,
-		Perms: usr.Perms,
+		Roles: usr.RoleIds,
+		Perms: usr.PermIds,
 	})
 	if err != nil {
 		return "", "", err
@@ -357,8 +375,8 @@ func (c *Usr) AuthByRefreshToken(ctx context.Context, refreshToken string) (stri
 
 	accessToken, err := c.r.Session.CreateToken(&entities.Session{
 		Id:    usr.Id,
-		Roles: usr.Roles,
-		Perms: usr.Perms,
+		Roles: usr.RoleIds,
+		Perms: usr.PermIds,
 	})
 	if err != nil {
 		return "", err
@@ -411,8 +429,8 @@ func (c *Usr) Reg(ctx context.Context, data *entities.UsrRegReqSt) (string, stri
 
 	accessToken, err := c.r.Session.CreateToken(&entities.Session{
 		Id:    newUsr.Id,
-		Roles: newUsr.Roles,
-		Perms: newUsr.Perms,
+		Roles: newUsr.RoleIds,
+		Perms: newUsr.PermIds,
 	})
 	if err != nil {
 		return "", "", err

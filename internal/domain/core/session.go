@@ -67,7 +67,7 @@ func (c *Session) CreateToken(ses *entities.Session) (string, error) {
 	token, _ := c.r.jwts.Create(
 		strconv.FormatInt(ses.Id, 10),
 		sessionDur,
-		map[string]interface{}{
+		map[string]any{
 			"roles": ses.Roles,
 			"perms": ses.Perms,
 		},

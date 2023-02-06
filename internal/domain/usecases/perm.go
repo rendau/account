@@ -8,7 +8,7 @@ import (
 )
 
 func (u *St) PermList(ctx context.Context,
-	pars *entities.PermListParsSt) ([]*entities.PermListSt, error) {
+	pars *entities.PermListParsSt) ([]*entities.PermSt, error) {
 	// var err error
 	//
 	// ses := u.SessionGetFromContext(ctx)

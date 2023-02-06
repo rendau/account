@@ -30,9 +30,9 @@ func TestAuth(t *testing.T) {
 	require.Equal(t, errs.PhoneNotExists, err)
 
 	usrId, err := app.core.Usr.Create(bgCtx, &entities.UsrCUSt{
-		Roles: usrRoles,
-		Phone: &usrPhone,
-		Name:  &usrName,
+		RoleIds: usrRoles,
+		Phone:   &usrPhone,
+		Name:    &usrName,
 	})
 	require.Nil(t, err)
 	require.Greater(t, usrId, int64(0))
@@ -92,8 +92,8 @@ func TestAuth(t *testing.T) {
 	require.Equal(t, usrId, profile.Id)
 	require.Equal(t, usrPhone, profile.Phone)
 	require.Equal(t, usrName, profile.Name)
-	require.Equal(t, usrRoles, profile.Roles)
-	require.True(t, dopTools.SlicesAreSame(usrPerms, profile.Perms))
+	require.Equal(t, usrRoles, profile.RoleIds)
+	require.True(t, dopTools.SlicesAreSame(usrPerms, profile.PermIds))
 
 	accessToken, err = app.ucs.ProfileAuthByRefreshToken(bgCtx, refreshToken)
 	require.Nil(t, err)
@@ -114,8 +114,8 @@ func TestAuth(t *testing.T) {
 	require.Equal(t, usrId, profile.Id)
 	require.Equal(t, usrPhone, profile.Phone)
 	require.Equal(t, usrName, profile.Name)
-	require.Equal(t, usrRoles, profile.Roles)
-	require.True(t, dopTools.SlicesAreSame(usrPerms, profile.Perms))
+	require.Equal(t, usrRoles, profile.RoleIds)
+	require.True(t, dopTools.SlicesAreSame(usrPerms, profile.PermIds))
 }
 
 func TestReg(t *testing.T) {
@@ -212,8 +212,8 @@ func TestReg(t *testing.T) {
 	require.Nil(t, err)
 	require.NotNil(t, profile)
 	require.Equal(t, "73330000045", profile.Phone)
-	require.Equal(t, []string{}, profile.Roles)
-	require.Equal(t, []string{}, profile.Perms)
+	require.Equal(t, []string{}, profile.RoleIds)
+	require.Equal(t, []string{}, profile.PermIds)
 	require.Equal(t, "/path_to_ava", profile.Ava)
 	require.Equal(t, "Name", profile.Name)
 }
@@ -230,8 +230,8 @@ func TestProfileGet(t *testing.T) {
 	require.Nil(t, err)
 	require.NotNil(t, profile)
 	require.Equal(t, admId, profile.Id)
-	require.Equal(t, []string{cns.RoleAdmin}, profile.Roles)
-	require.True(t, dopTools.SlicesAreSame([]string{"*"}, profile.Perms))
+	require.Equal(t, []string{cns.RoleAdmin}, profile.RoleIds)
+	require.True(t, dopTools.SlicesAreSame([]string{"*"}, profile.PermIds))
 	require.Equal(t, admPhone, profile.Phone)
 	require.Equal(t, admName, profile.Name)
 }
@@ -243,9 +243,9 @@ func TestPhoneChange(t *testing.T) {
 	admCtx := ctxWithSes(t, nil, admId)
 
 	usrId, err := app.ucs.UsrCreate(admCtx, &entities.UsrCUSt{
-		Roles: []string{role2Id},
-		Phone: dopTools.NewPtr("72340000001"),
-		Name:  dopTools.NewPtr("Name"),
+		RoleIds: []string{role2Id},
+		Phone:   dopTools.NewPtr("72340000001"),
+		Name:    dopTools.NewPtr("Name"),
 	})
 	require.Nil(t, err)
 

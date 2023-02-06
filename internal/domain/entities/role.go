@@ -1,22 +1,34 @@
 package entities
 
+import (
+	"github.com/rendau/dop/dopTypes"
+)
+
 type RoleSt struct {
-	Id       string `json:"id" db:"id"`
+	Id       int64  `json:"id" db:"id"`
+	Code     string `json:"code" db:"code"`
 	Name     string `json:"name" db:"name"`
 	IsSystem bool   `json:"is_system" db:"is_system"`
 
-	Perms []string `json:"perms" db:"perms"`
+	PermIds []int64 `json:"perm_ids" db:"perm_ids"`
 }
 
 type RoleListSt struct {
-	Id       string `json:"id" db:"id"`
+	Id       int64  `json:"id" db:"id"`
+	Code     string `json:"code" db:"code"`
 	Name     string `json:"name" db:"name"`
 	IsSystem bool   `json:"is_system" db:"is_system"`
 }
 
+type RoleListParsSt struct {
+	dopTypes.ListParams
+
+	Ids *[]int64 `json:"ids" form:"ids"`
+}
+
 type RoleCUSt struct {
-	Id   *string `json:"id" db:"id"`
+	Code *string `json:"code" db:"code"`
 	Name *string `json:"name" db:"name"`
 
-	Perms []string `json:"perms"`
+	PermIds []int64 `json:"perm_ids"`
 }

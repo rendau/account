@@ -13,7 +13,7 @@ import (
 
 func (d *St) UsrList(ctx context.Context, pars *entities.UsrListParsSt) ([]*entities.UsrListSt, int64, error) {
 	conds := make([]string, 0)
-	args := map[string]interface{}{}
+	args := map[string]any{}
 
 	// filter
 	if pars.Id != nil {
@@ -61,7 +61,7 @@ func (d *St) UsrList(ctx context.Context, pars *entities.UsrListParsSt) ([]*enti
 
 func (d *St) UsrGet(ctx context.Context, pars *entities.UsrGetParsSt) (*entities.UsrSt, error) {
 	conds := make([]string, 0)
-	args := map[string]interface{}{}
+	args := map[string]any{}
 
 	// filter
 	if pars.Id != nil {
@@ -83,12 +83,12 @@ func (d *St) UsrGet(ctx context.Context, pars *entities.UsrGetParsSt) (*entities
 		Dst:    result,
 		Tables: []string{"usr"},
 		ColExprs: map[string]string{
-			"roles": `(
+			"role_ids": `(
 				select array_agg(distinct role_id)
 				from usr_role
 				where usr_id = usr.id
 			)`,
-			"perms": `(
+			"perm_ids": `(
 				select array_agg(distinct rp.perm_id)
 				from usr_role ur
 					join role_perm rp on rp.role_id = ur.role_id
@@ -105,11 +105,11 @@ func (d *St) UsrGet(ctx context.Context, pars *entities.UsrGetParsSt) (*entities
 		return nil, err
 	}
 
-	if result.Roles == nil {
-		result.Roles = []string{}
+	if result.RoleIds == nil {
+		result.RoleIds = []int64{}
 	}
-	if result.Perms == nil {
-		result.Perms = []string{}
+	if result.PermIds == nil {
+		result.PermIds = []int64{}
 	}
 
 	return result, nil
@@ -169,8 +169,8 @@ func (d *St) UsrSetToken(ctx context.Context, id int64, token string) error {
 	return d.DbExec(ctx, `update usr set token = $2 where id = $1`, id, token)
 }
 
-func (d *St) UsrGetRoleIds(ctx context.Context, id int64) ([]string, error) {
-	result := make([]string, 0)
+func (d *St) UsrGetRoleIds(ctx context.Context, id int64) ([]int64, error) {
+	result := make([]int64, 0)
 
 	err := d.DbQueryRow(ctx, `
 		select array_agg(distinct role_id)
@@ -181,8 +181,8 @@ func (d *St) UsrGetRoleIds(ctx context.Context, id int64) ([]string, error) {
 	return result, err
 }
 
-func (d *St) UsrGetPermIds(ctx context.Context, id int64) ([]string, error) {
-	result := make([]string, 0)
+func (d *St) UsrGetPermIds(ctx context.Context, id int64) ([]int64, error) {
+	result := make([]int64, 0)
 
 	err := d.DbQueryRow(ctx, `
 		select array_agg(distinct rp.perm_id)
@@ -238,12 +238,12 @@ func (d *St) UsrCreate(ctx context.Context, obj *entities.UsrCUSt) (int64, error
 		return 0, err
 	}
 
-	if len(obj.Roles) > 0 {
+	if len(obj.RoleIds) > 0 {
 		err = d.DbExec(ctx, `
 			insert into usr_role(usr_id, role_id)
 			select distinct $1::bigint, x.id
-			from unnest($2::text[]) x(id)
-		`, result, obj.Roles)
+			from unnest($2::bigint[]) x(id)
+		`, result, obj.RoleIds)
 		if err != nil {
 			return 0, err
 		}
@@ -263,10 +263,10 @@ func (d *St) UsrUpdate(ctx context.Context, id int64, obj *entities.UsrCUSt) err
 		return err
 	}
 
-	if obj.Roles != nil {
+	if obj.RoleIds != nil {
 		err = d.DbExec(ctx, `
 			with q0 as (
-				select distinct id from unnest($2::text[]) x(id)
+				select distinct id from unnest($2::bigint[]) x(id)
 			), d as (
 				delete from usr_role where usr_id = $1 and role_id not in (select id from q0)
 			)
@@ -275,7 +275,7 @@ func (d *St) UsrUpdate(ctx context.Context, id int64, obj *entities.UsrCUSt) err
 			from q0
 				left join usr_role ur on ur.usr_id = $1 and ur.role_id = q0.id
 			where ur.role_id is null
-		`, id, obj.Roles)
+		`, id, obj.RoleIds)
 		if err != nil {
 			return err
 		}
@@ -295,7 +295,7 @@ func (d *St) UsrDelete(ctx context.Context, id int64) error {
 func (d *St) UsrFilterUnusedFiles(ctx context.Context, src []string) ([]string, error) {
 	rows, err := d.DbQuery(ctx, `
 		select x.a
-		from unnest($1 :: text[]) x(a)
+		from unnest($1 :: bigint[]) x(a)
 			left join usr y on y.ava = x.a
 		where y.ava is null
 	`, src)

@@ -16,41 +16,26 @@ func NewPerm(r *St) *Perm {
 	return &Perm{r: r}
 }
 
-func (c *Perm) ValidateCU(ctx context.Context, obj *entities.PermCUSt, id string) error {
-	forCreate := id == ""
+func (c *Perm) ValidateCU(ctx context.Context, obj *entities.PermCUSt, id int64) error {
+	forCreate := id == 0
 
-	if forCreate && obj.Id == nil {
-		return errs.IdRequired
+	if forCreate && obj.Code == nil {
+		return errs.CodeRequired
 	}
-	if obj.Id != nil {
-		if *obj.Id == "" {
-			return errs.IdRequired
-		}
-
-		if id != *obj.Id {
-			exists, err := c.IdExists(ctx, *obj.Id)
-			if err != nil {
-				return err
-			}
-			if exists {
-				return errs.IdAlreadyExists
-			}
+	if obj.Code != nil {
+		if *obj.Code == "" {
+			return errs.CodeRequired
 		}
 	}
 
-	if forCreate && obj.App == nil {
+	if forCreate && obj.AppId == nil {
 		return errs.ApplicationRequired
-	}
-	if obj.App != nil {
-		if *obj.App == "" {
-			return errs.ApplicationRequired
-		}
 	}
 
 	return nil
 }
 
-func (c *Perm) List(ctx context.Context, pars *entities.PermListParsSt) ([]*entities.PermListSt, error) {
+func (c *Perm) List(ctx context.Context, pars *entities.PermListParsSt) ([]*entities.PermSt, error) {
 	items, err := c.r.repo.PermList(ctx, pars)
 	if err != nil {
 		return nil, err
@@ -59,7 +44,7 @@ func (c *Perm) List(ctx context.Context, pars *entities.PermListParsSt) ([]*enti
 	return items, nil
 }
 
-func (c *Perm) Get(ctx context.Context, id string, errNE bool) (*entities.PermSt, error) {
+func (c *Perm) Get(ctx context.Context, id int64, errNE bool) (*entities.PermSt, error) {
 	result, err := c.r.repo.PermGet(ctx, id)
 	if err != nil {
 		return nil, err
@@ -74,14 +59,14 @@ func (c *Perm) Get(ctx context.Context, id string, errNE bool) (*entities.PermSt
 	return result, nil
 }
 
-func (c *Perm) IdExists(ctx context.Context, id string) (bool, error) {
+func (c *Perm) IdExists(ctx context.Context, id int64) (bool, error) {
 	return c.r.repo.PermIdExists(ctx, id)
 }
 
 func (c *Perm) Create(ctx context.Context, obj *entities.PermCUSt) (string, error) {
 	var err error
 
-	err = c.ValidateCU(ctx, obj, "")
+	err = c.ValidateCU(ctx, obj, 0)
 	if err != nil {
 		return "", err
 	}
@@ -95,7 +80,7 @@ func (c *Perm) Create(ctx context.Context, obj *entities.PermCUSt) (string, erro
 	return result, nil
 }
 
-func (c *Perm) Update(ctx context.Context, id string, obj *entities.PermCUSt) error {
+func (c *Perm) Update(ctx context.Context, id int64, obj *entities.PermCUSt) error {
 	var err error
 
 	err = c.ValidateCU(ctx, obj, id)
@@ -111,6 +96,6 @@ func (c *Perm) Update(ctx context.Context, id string, obj *entities.PermCUSt) er
 	return nil
 }
 
-func (c *Perm) Delete(ctx context.Context, id string) error {
+func (c *Perm) Delete(ctx context.Context, id int64) error {
 	return c.r.repo.PermDelete(ctx, id)
 }

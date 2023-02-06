@@ -12,7 +12,7 @@ import (
 // @Tags     perm
 // @Param    query  query  entities.PermListParsSt  false  "query"
 // @Produce  json
-// @Success  200  {array}   entities.PermListSt
+// @Success  200  {array}   entities.PermSt
 // @Failure  400  {object}  dopTypes.ErrRep
 func (o *St) hPermList(c *gin.Context) {
 	pars := &entities.PermListParsSt{}

@@ -30,6 +30,7 @@ type St struct {
 	Perm *Perm
 	Role *Role
 	Usr  *Usr
+	App  *App
 }
 
 func New(
@@ -60,6 +61,7 @@ func New(
 	c.Perm = NewPerm(c)
 	c.Role = NewRole(c)
 	c.Usr = NewUsr(c)
+	c.App = NewApp(c)
 
 	return c
 }
