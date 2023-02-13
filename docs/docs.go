@@ -16,6 +16,236 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/app": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "app"
+                ],
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "cols",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "name": "ids",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "only_count",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "sort_name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "with_total_count",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dopTypes.PaginatedListRep"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "results": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/entities.AppSt"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dopTypes.ErrRep"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "app"
+                ],
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/entities.AppCUSt"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/dopTypes.CreateRep"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dopTypes.ErrRep"
+                        }
+                    }
+                }
+            }
+        },
+        "/app/:id": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "app"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.AppSt"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dopTypes.ErrRep"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "app"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "body",
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/entities.AppCUSt"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dopTypes.ErrRep"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "app"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dopTypes.ErrRep"
+                        }
+                    }
+                }
+            }
+        },
         "/dic": {
             "get": {
                 "description": "Get all dictionaries",
@@ -52,8 +282,8 @@ const docTemplate = `{
                 ],
                 "parameters": [
                     {
-                        "type": "string",
-                        "name": "app",
+                        "type": "integer",
+                        "name": "app_id",
                         "in": "query"
                     },
                     {
@@ -67,7 +297,7 @@ const docTemplate = `{
                     {
                         "type": "array",
                         "items": {
-                            "type": "string"
+                            "type": "integer"
                         },
                         "name": "ids",
                         "in": "query"
@@ -85,11 +315,6 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "name": "page_size",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "search",
                         "in": "query"
                     },
                     {
@@ -117,7 +342,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/entities.PermListSt"
+                                "$ref": "#/definitions/entities.PermSt"
                             }
                         }
                     },
@@ -158,7 +383,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "id": {
-                                            "type": "string"
+                                            "type": "integer"
                                         }
                                     }
                                 }
@@ -232,7 +457,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -260,7 +485,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -313,7 +538,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -344,7 +569,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -409,7 +634,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -430,7 +655,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -495,7 +720,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -513,6 +738,57 @@ const docTemplate = `{
                 ],
                 "tags": [
                     "role"
+                ],
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "cols",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "name": "ids",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "only_count",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "sort_name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "with_total_count",
+                        "in": "query"
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -561,7 +837,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "id": {
-                                            "type": "string"
+                                            "type": "integer"
                                         }
                                     }
                                 }
@@ -635,7 +911,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -663,7 +939,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -876,7 +1152,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -904,7 +1180,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "OK"
                     },
                     "400": {
                         "description": "Bad Request",
@@ -920,9 +1196,7 @@ const docTemplate = `{
         "dopTypes.CreateRep": {
             "type": "object",
             "properties": {
-                "id": {
-                    "type": "any"
-                }
+                "id": {}
             }
         },
         "dopTypes.ErrRep": {
@@ -951,11 +1225,37 @@ const docTemplate = `{
                 "page_size": {
                     "type": "integer"
                 },
-                "results": {
-                    "type": "any"
-                },
+                "results": {},
                 "total_count": {
                     "type": "integer"
+                }
+            }
+        },
+        "entities.AppCUSt": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "perm_url": {
+                    "type": "string"
+                }
+            }
+        },
+        "entities.AppSt": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "is_account_app": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "perm_url": {
+                    "type": "string"
                 }
             }
         },
@@ -989,6 +1289,12 @@ const docTemplate = `{
         "entities.DicDataSt": {
             "type": "object",
             "properties": {
+                "apps": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/entities.AppSt"
+                    }
+                },
                 "roles": {
                     "type": "array",
                     "items": {
@@ -1000,45 +1306,31 @@ const docTemplate = `{
         "entities.PermCUSt": {
             "type": "object",
             "properties": {
-                "app": {
+                "app_id": {
+                    "type": "integer"
+                },
+                "code": {
                     "type": "string"
                 },
                 "dsc": {
                     "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
-        "entities.PermListSt": {
-            "type": "object",
-            "properties": {
-                "app": {
-                    "type": "string"
-                },
-                "dsc": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "is_system": {
-                    "type": "boolean"
                 }
             }
         },
         "entities.PermSt": {
             "type": "object",
             "properties": {
-                "app": {
+                "app_id": {
+                    "type": "integer"
+                },
+                "code": {
                     "type": "string"
                 },
                 "dsc": {
                     "type": "string"
                 },
                 "id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "is_system": {
                     "type": "boolean"
@@ -1059,16 +1351,16 @@ const docTemplate = `{
         "entities.RoleCUSt": {
             "type": "object",
             "properties": {
-                "id": {
+                "code": {
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
-                "perms": {
+                "perm_ids": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer"
                     }
                 }
             }
@@ -1076,8 +1368,11 @@ const docTemplate = `{
         "entities.RoleListSt": {
             "type": "object",
             "properties": {
-                "id": {
+                "code": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "is_system": {
                     "type": "boolean"
@@ -1090,8 +1385,11 @@ const docTemplate = `{
         "entities.RoleSt": {
             "type": "object",
             "properties": {
-                "id": {
+                "code": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "is_system": {
                     "type": "boolean"
@@ -1099,10 +1397,10 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "perms": {
+                "perm_ids": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer"
                     }
                 }
             }
@@ -1130,10 +1428,10 @@ const docTemplate = `{
                 "phone": {
                     "type": "string"
                 },
-                "roles": {
+                "role_ids": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "integer"
                     }
                 }
             }
@@ -1173,19 +1471,31 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "perm_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "perms": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/entities.PermSt"
                     }
                 },
                 "phone": {
                     "type": "string"
                 },
+                "role_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "roles": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/entities.RoleListSt"
                     }
                 }
             }
@@ -1222,19 +1532,31 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "perm_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "perms": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/entities.PermSt"
                     }
                 },
                 "phone": {
                     "type": "string"
                 },
+                "role_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "roles": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/entities.RoleListSt"
                     }
                 }
             }

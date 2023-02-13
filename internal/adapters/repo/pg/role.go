@@ -81,8 +81,8 @@ func (d *St) RoleIdExists(ctx context.Context, id int64) (bool, error) {
 	return cnt > 0, nil
 }
 
-func (d *St) RoleCreate(ctx context.Context, obj *entities.RoleCUSt) (string, error) {
-	var result string
+func (d *St) RoleCreate(ctx context.Context, obj *entities.RoleCUSt) (int64, error) {
+	var result int64
 
 	err := d.HfCreate(ctx, db.RDBCreateOptions{
 		Table:  `"role"`,
@@ -91,7 +91,7 @@ func (d *St) RoleCreate(ctx context.Context, obj *entities.RoleCUSt) (string, er
 		RetV:   &result,
 	})
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 
 	if len(obj.PermIds) > 0 {
@@ -101,7 +101,7 @@ func (d *St) RoleCreate(ctx context.Context, obj *entities.RoleCUSt) (string, er
 			from unnest($2::bigint[]) x(id)
 		`, result, obj.PermIds)
 		if err != nil {
-			return "", err
+			return 0, err
 		}
 	}
 

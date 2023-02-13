@@ -34,16 +34,16 @@ func (u *St) RoleGet(ctx context.Context,
 }
 
 func (u *St) RoleCreate(ctx context.Context,
-	obj *entities.RoleCUSt) (string, error) {
+	obj *entities.RoleCUSt) (int64, error) {
 	var err error
 
 	ses := u.SessionGetFromContext(ctx)
 
 	if err = u.SessionRequirePerm(ses, false, cns.PermMRole); err != nil {
-		return "", err
+		return 0, err
 	}
 
-	var result string
+	var result int64
 
 	err = u.db.TransactionFn(ctx, func(ctx context.Context) error {
 		result, err = u.cr.Role.Create(ctx, obj)

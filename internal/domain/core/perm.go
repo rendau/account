@@ -63,18 +63,18 @@ func (c *Perm) IdExists(ctx context.Context, id int64) (bool, error) {
 	return c.r.repo.PermIdExists(ctx, id)
 }
 
-func (c *Perm) Create(ctx context.Context, obj *entities.PermCUSt) (string, error) {
+func (c *Perm) Create(ctx context.Context, obj *entities.PermCUSt) (int64, error) {
 	var err error
 
 	err = c.ValidateCU(ctx, obj, 0)
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 
 	// create
 	result, err := c.r.repo.PermCreate(ctx, obj)
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 
 	return result, nil

@@ -74,8 +74,8 @@ func (d *St) PermIdExists(ctx context.Context, id int64) (bool, error) {
 	return cnt > 0, nil
 }
 
-func (d *St) PermCreate(ctx context.Context, obj *entities.PermCUSt) (string, error) {
-	var result string
+func (d *St) PermCreate(ctx context.Context, obj *entities.PermCUSt) (int64, error) {
+	var result int64
 
 	err := d.HfCreate(ctx, db.RDBCreateOptions{
 		Table:  "perm",
@@ -84,7 +84,7 @@ func (d *St) PermCreate(ctx context.Context, obj *entities.PermCUSt) (string, er
 		RetV:   &result,
 	})
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 
 	return result, nil

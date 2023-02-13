@@ -27,7 +27,7 @@ type Repo interface {
 	// role
 	RoleGet(ctx context.Context, id int64) (*entities.RoleSt, error)
 	RoleList(ctx context.Context, pars *entities.RoleListParsSt) ([]*entities.RoleListSt, error)
-	RoleCreate(ctx context.Context, obj *entities.RoleCUSt) (string, error)
+	RoleCreate(ctx context.Context, obj *entities.RoleCUSt) (int64, error)
 	RoleIdExists(ctx context.Context, id int64) (bool, error)
 	RoleUpdate(ctx context.Context, id int64, obj *entities.RoleCUSt) error
 	RoleDelete(ctx context.Context, id int64) error
@@ -36,7 +36,7 @@ type Repo interface {
 	PermGet(ctx context.Context, id int64) (*entities.PermSt, error)
 	PermList(ctx context.Context, pars *entities.PermListParsSt) ([]*entities.PermSt, error)
 	PermIdExists(ctx context.Context, id int64) (bool, error)
-	PermCreate(ctx context.Context, obj *entities.PermCUSt) (string, error)
+	PermCreate(ctx context.Context, obj *entities.PermCUSt) (int64, error)
 	PermUpdate(ctx context.Context, id int64, obj *entities.PermCUSt) error
 	PermDelete(ctx context.Context, id int64) error
 

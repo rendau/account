@@ -33,7 +33,7 @@ func (o *St) hRoleList(c *gin.Context) {
 // @Tags     role
 // @Param    body  body  entities.RoleCUSt  false  "body"
 // @Produce  json
-// @Success  200  {object}  dopTypes.CreateRep{id=string}
+// @Success  200  {object}  dopTypes.CreateRep{id=int}
 // @Failure  400  {object}  dopTypes.ErrRep
 func (o *St) hRoleCreate(c *gin.Context) {
 	reqObj := &entities.RoleCUSt{}

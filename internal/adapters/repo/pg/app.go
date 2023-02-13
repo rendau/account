@@ -49,7 +49,7 @@ func (d *St) AppList(ctx context.Context, pars *entities.AppListParsSt) ([]*enti
 		Conds:  conds,
 		Args:   args,
 		AllowedSorts: map[string]string{
-			"default": "t.id",
+			"default": "t.is_account_app, t.id",
 		},
 	})
 

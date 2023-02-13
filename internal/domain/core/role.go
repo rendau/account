@@ -49,10 +49,10 @@ func (c *Role) IdExists(ctx context.Context, id int64) (bool, error) {
 	return c.r.repo.RoleIdExists(ctx, id)
 }
 
-func (c *Role) Create(ctx context.Context, obj *entities.RoleCUSt) (string, error) {
+func (c *Role) Create(ctx context.Context, obj *entities.RoleCUSt) (int64, error) {
 	err := c.ValidateCU(ctx, obj, 0)
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 
 	return c.r.repo.RoleCreate(ctx, obj)

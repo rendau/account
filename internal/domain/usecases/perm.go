@@ -34,16 +34,16 @@ func (u *St) PermGet(ctx context.Context,
 }
 
 func (u *St) PermCreate(ctx context.Context,
-	obj *entities.PermCUSt) (string, error) {
+	obj *entities.PermCUSt) (int64, error) {
 	var err error
 
 	ses := u.SessionGetFromContext(ctx)
 
 	if err = u.SessionRequirePerm(ses, false, cns.PermMPerm); err != nil {
-		return "", err
+		return 0, err
 	}
 
-	var result string
+	var result int64
 
 	err = u.db.TransactionFn(ctx, func(ctx context.Context) error {
 		result, err = u.cr.Perm.Create(ctx, obj)

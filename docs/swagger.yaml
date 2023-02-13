@@ -1,8 +1,7 @@
 definitions:
   dopTypes.CreateRep:
     properties:
-      id:
-        type: any
+      id: {}
     type: object
   dopTypes.ErrRep:
     properties:
@@ -21,10 +20,27 @@ definitions:
         type: integer
       page_size:
         type: integer
-      results:
-        type: any
+      results: {}
       total_count:
         type: integer
+    type: object
+  entities.AppCUSt:
+    properties:
+      name:
+        type: string
+      perm_url:
+        type: string
+    type: object
+  entities.AppSt:
+    properties:
+      id:
+        type: integer
+      is_account_app:
+        type: boolean
+      name:
+        type: string
+      perm_url:
+        type: string
     type: object
   entities.AuthByTokenRepSt:
     properties:
@@ -45,6 +61,10 @@ definitions:
     type: object
   entities.DicDataSt:
     properties:
+      apps:
+        items:
+          $ref: '#/definitions/entities.AppSt'
+        type: array
       roles:
         items:
           $ref: '#/definitions/entities.RoleListSt'
@@ -52,32 +72,23 @@ definitions:
     type: object
   entities.PermCUSt:
     properties:
-      app:
+      app_id:
+        type: integer
+      code:
         type: string
       dsc:
         type: string
-      id:
-        type: string
-    type: object
-  entities.PermListSt:
-    properties:
-      app:
-        type: string
-      dsc:
-        type: string
-      id:
-        type: string
-      is_system:
-        type: boolean
     type: object
   entities.PermSt:
     properties:
-      app:
+      app_id:
+        type: integer
+      code:
         type: string
       dsc:
         type: string
       id:
-        type: string
+        type: integer
       is_system:
         type: boolean
     type: object
@@ -90,19 +101,21 @@ definitions:
     type: object
   entities.RoleCUSt:
     properties:
-      id:
+      code:
         type: string
       name:
         type: string
-      perms:
+      perm_ids:
         items:
-          type: string
+          type: integer
         type: array
     type: object
   entities.RoleListSt:
     properties:
-      id:
+      code:
         type: string
+      id:
+        type: integer
       is_system:
         type: boolean
       name:
@@ -110,15 +123,17 @@ definitions:
     type: object
   entities.RoleSt:
     properties:
-      id:
+      code:
         type: string
+      id:
+        type: integer
       is_system:
         type: boolean
       name:
         type: string
-      perms:
+      perm_ids:
         items:
-          type: string
+          type: integer
         type: array
     type: object
   entities.SendPhoneValidatingCodeReqSt:
@@ -136,9 +151,9 @@ definitions:
         type: string
       phone:
         type: string
-      roles:
+      role_ids:
         items:
-          type: string
+          type: integer
         type: array
     type: object
   entities.UsrListSt:
@@ -164,15 +179,23 @@ definitions:
         type: integer
       name:
         type: string
+      perm_ids:
+        items:
+          type: integer
+        type: array
       perms:
         items:
-          type: string
+          $ref: '#/definitions/entities.PermSt'
         type: array
       phone:
         type: string
+      role_ids:
+        items:
+          type: integer
+        type: array
       roles:
         items:
-          type: string
+          $ref: '#/definitions/entities.RoleListSt'
         type: array
     type: object
   entities.UsrRegReqSt:
@@ -196,20 +219,167 @@ definitions:
         type: integer
       name:
         type: string
+      perm_ids:
+        items:
+          type: integer
+        type: array
       perms:
         items:
-          type: string
+          $ref: '#/definitions/entities.PermSt'
         type: array
       phone:
         type: string
+      role_ids:
+        items:
+          type: integer
+        type: array
       roles:
         items:
-          type: string
+          $ref: '#/definitions/entities.RoleListSt'
         type: array
     type: object
 info:
   contact: {}
 paths:
+  /app:
+    get:
+      parameters:
+      - in: query
+        items:
+          type: string
+        name: cols
+        type: array
+      - in: query
+        items:
+          type: integer
+        name: ids
+        type: array
+      - in: query
+        name: name
+        type: string
+      - in: query
+        name: only_count
+        type: boolean
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: page_size
+        type: integer
+      - in: query
+        items:
+          type: string
+        name: sort
+        type: array
+      - in: query
+        name: sort_name
+        type: string
+      - in: query
+        name: with_total_count
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dopTypes.PaginatedListRep'
+            - properties:
+                results:
+                  items:
+                    $ref: '#/definitions/entities.AppSt'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - app
+    post:
+      parameters:
+      - description: body
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/entities.AppCUSt'
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/dopTypes.CreateRep'
+            - properties:
+                id:
+                  type: integer
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - app
+  /app/:id:
+    delete:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - app
+    get:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.AppSt'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - app
+    put:
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: body
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/entities.AppCUSt'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      tags:
+      - app
   /dic:
     get:
       description: Get all dictionaries
@@ -231,8 +401,8 @@ paths:
     get:
       parameters:
       - in: query
-        name: app
-        type: string
+        name: app_id
+        type: integer
       - in: query
         items:
           type: string
@@ -240,7 +410,7 @@ paths:
         type: array
       - in: query
         items:
-          type: string
+          type: integer
         name: ids
         type: array
       - in: query
@@ -252,9 +422,6 @@ paths:
       - in: query
         name: page_size
         type: integer
-      - in: query
-        name: search
-        type: string
       - in: query
         items:
           type: string
@@ -273,7 +440,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/entities.PermListSt'
+              $ref: '#/definitions/entities.PermSt'
             type: array
         "400":
           description: Bad Request
@@ -298,7 +465,7 @@ paths:
             - $ref: '#/definitions/dopTypes.CreateRep'
             - properties:
                 id:
-                  type: string
+                  type: integer
               type: object
         "400":
           description: Bad Request
@@ -318,7 +485,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -361,7 +528,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -394,7 +561,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -413,7 +580,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -453,7 +620,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -466,7 +633,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -506,7 +673,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -515,6 +682,37 @@ paths:
       - profile
   /role:
     get:
+      parameters:
+      - in: query
+        items:
+          type: string
+        name: cols
+        type: array
+      - in: query
+        items:
+          type: integer
+        name: ids
+        type: array
+      - in: query
+        name: only_count
+        type: boolean
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: page_size
+        type: integer
+      - in: query
+        items:
+          type: string
+        name: sort
+        type: array
+      - in: query
+        name: sort_name
+        type: string
+      - in: query
+        name: with_total_count
+        type: boolean
       produces:
       - application/json
       responses:
@@ -547,7 +745,7 @@ paths:
             - $ref: '#/definitions/dopTypes.CreateRep'
             - properties:
                 id:
-                  type: string
+                  type: integer
               type: object
         "400":
           description: Bad Request
@@ -567,7 +765,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -610,7 +808,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -713,7 +911,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:
@@ -756,7 +954,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: ""
+          description: OK
         "400":
           description: Bad Request
           schema:

@@ -24,5 +24,10 @@ func (c *Dic) Get(ctx context.Context) (*entities.DicDataSt, error) {
 		return nil, err
 	}
 
+	data.Apps, _, err = c.r.App.List(ctx, &entities.AppListParsSt{})
+	if err != nil {
+		return nil, err
+	}
+
 	return data, nil
 }

@@ -3,14 +3,12 @@ package usecases
 import (
 	"context"
 
-	"github.com/rendau/account/internal/cns"
 	"github.com/rendau/account/internal/domain/entities"
-	"github.com/rendau/dop/dopTools"
 )
 
 func (u *St) AppList(ctx context.Context,
 	pars *entities.AppListParsSt) ([]*entities.AppSt, int64, error) {
-	var err error
+	// var err error
 
 	// ses := u.SessionGetFromContext(ctx)
 	//
@@ -18,9 +16,9 @@ func (u *St) AppList(ctx context.Context,
 	// 	return nil, 0, err
 	// }
 
-	if err = dopTools.RequirePageSize(pars.ListParams, cns.MaxPageSize); err != nil {
-		return nil, 0, err
-	}
+	// if err = dopTools.RequirePageSize(pars.ListParams, cns.MaxPageSize); err != nil {
+	// 	return nil, 0, err
+	// }
 
 	return u.cr.App.List(ctx, pars)
 }

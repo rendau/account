@@ -15,7 +15,6 @@ create table app
     id             bigserial not null
         primary key,
     name           text      not null default '',
-    perm_prefix    text      not null default '',
     perm_url       text      not null default '',
     is_account_app bool      not null default false
 );
@@ -88,8 +87,8 @@ $$
         admin_usr_id   bigint;
     begin
         -- app
-        insert into app(name, perm_prefix, perm_url, is_account_app)
-        values ('Account', 'account--', '', true)
+        insert into app(name, perm_url, is_account_app)
+        values ('Account', '', true)
         returning id
             into account_app_id;
 
