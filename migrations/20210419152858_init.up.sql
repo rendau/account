@@ -24,6 +24,7 @@ create table perm
     id        bigserial not null
         primary key,
     code      text      not null default '',
+    is_all    bool      not null default false,
     app_id    bigint    not null
         constraint perm_fk_app_id references app (id) on update cascade on delete cascade,
     dsc       text      not null default '',
@@ -93,11 +94,11 @@ $$
             into account_app_id;
 
         -- perms
-        insert into perm(code, app_id, dsc, is_system)
-        values ('*', account_app_id, 'All permissions', true)
-             , ('m_perm', account_app_id, 'Modify permissions', true)
-             , ('m_role', account_app_id, 'Modify roles', true)
-             , ('m_usr', account_app_id, 'Modify users', true);
+        insert into perm(code, is_all, app_id, dsc, is_system)
+        values ('acc--*', true, account_app_id, 'All permissions', true)
+             , ('acc--m_perm', false, account_app_id, 'Modify permissions', true)
+             , ('acc--m_role', false, account_app_id, 'Modify roles', true)
+             , ('acc--m_usr', false, account_app_id, 'Modify users', true);
 
         -- Admin role
         insert into role(code, name, is_system)
@@ -107,7 +108,7 @@ $$
 
         -- Admin role_perm
         insert into role_perm(role_id, perm_id)
-        values (admin_role_id, (select id from perm where app_id = account_app_id and code = '*'));
+        values (admin_role_id, (select id from perm where app_id = account_app_id and is_all));
 
         -- Admin user
         insert into usr(phone, name)

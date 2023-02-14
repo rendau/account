@@ -22,20 +22,26 @@ func NewSession(r *St) *Session {
 func (c *Session) GetFromToken(token string) *entities.Session {
 	result := &entities.Session{}
 
+	defer func() {
+		if result.Roles == nil {
+			result.Roles = make([]string, 0)
+		}
+
+		if result.Perms == nil {
+			result.Perms = make([]string, 0)
+		}
+	}()
+
+	if token == "" {
+		return result
+	}
+
 	err := jwt.ParsePayload(token, result)
 	if err != nil {
 		return &entities.Session{}
 	}
 
 	result.Id, _ = strconv.ParseInt(result.Sub, 10, 64)
-
-	if result.Roles == nil {
-		result.Roles = make([]string, 0)
-	}
-
-	if result.Perms == nil {
-		result.Perms = make([]string, 0)
-	}
 
 	return result
 }
@@ -51,7 +57,7 @@ func (c *Session) SetToContext(ctx context.Context, ses *entities.Session) conte
 func (c *Session) GetFromContext(ctx context.Context) *entities.Session {
 	contextV := ctx.Value(sessionContextKey)
 	if contextV == nil {
-		return &entities.Session{}
+		return c.GetFromToken("")
 	}
 
 	switch ses := contextV.(type) {
@@ -59,7 +65,7 @@ func (c *Session) GetFromContext(ctx context.Context) *entities.Session {
 		return ses
 	default:
 		c.r.lg.Errorw("wrong type of session in context", nil)
-		return &entities.Session{}
+		return c.GetFromToken("")
 	}
 }
 

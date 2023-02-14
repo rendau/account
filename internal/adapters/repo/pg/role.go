@@ -97,7 +97,7 @@ func (d *St) RoleCreate(ctx context.Context, obj *entities.RoleCUSt) (int64, err
 	if len(obj.PermIds) > 0 {
 		err = d.DbExec(ctx, `
 			insert into role_perm(role_id, perm_id)
-			select distinct $1, x.id
+			select distinct $1::bigint, x.id
 			from unnest($2::bigint[]) x(id)
 		`, result, obj.PermIds)
 		if err != nil {

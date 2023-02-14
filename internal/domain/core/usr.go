@@ -503,16 +503,21 @@ func (c *Usr) Create(ctx context.Context, obj *entities.UsrCUSt) (int64, error) 
 }
 
 func (c *Usr) GetProfile(ctx context.Context, id int64) (*entities.UsrProfileSt, error) {
+	ses := c.r.Session.GetFromContext(ctx)
+
 	usr, err := c.Get(ctx, &entities.UsrGetParsSt{Id: &id}, true)
 	if err != nil {
 		return nil, err
 	}
 
-	res := &entities.UsrProfileSt{
-		UsrSt: *usr,
-	}
+	usr.RoleIds = nil
+	usr.PermIds = nil
 
-	return res, nil
+	return &entities.UsrProfileSt{
+		UsrSt:     *usr,
+		RoleCodes: ses.Roles,
+		PermCodes: ses.Perms,
+	}, nil
 }
 
 func (c *Usr) Update(ctx context.Context, id int64, obj *entities.UsrCUSt) error {
