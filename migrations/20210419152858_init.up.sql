@@ -84,6 +84,7 @@ do
 $$
     declare
         account_app_id bigint;
+        super_admin_role_id  bigint;
         admin_role_id  bigint;
         admin_usr_id   bigint;
     begin
@@ -95,22 +96,33 @@ $$
 
         -- perms
         insert into perm(code, is_all, app_id, dsc, is_system)
-        values ('acc--*', true, account_app_id, 'All permissions', true)
-             , ('acc--m_perm', false, account_app_id, 'Modify permissions', true)
-             , ('acc--m_role', false, account_app_id, 'Modify roles', true)
-             , ('acc--m_usr', false, account_app_id, 'Modify users', true);
+        values ('acc:*', true, account_app_id, 'All permissions', true)
+             , ('acc:m_app', false, account_app_id, 'Modify applications', true)
+             , ('acc:m_perm', false, account_app_id, 'Modify permissions', true)
+             , ('acc:m_role', false, account_app_id, 'Modify roles', true)
+             , ('acc:m_usr', false, account_app_id, 'Modify users', true);
+
+        -- Super Admin role
+        insert into role(code, name, is_system)
+        values ('acc:super_admin', 'Account:SuperAdmin', true)
+        returning id
+            into super_admin_role_id;
 
         -- Admin role
         insert into role(code, name, is_system)
-        values ('admin', 'Admin', true)
+        values ('acc:admin', 'Account:Admin', true)
         returning id
             into admin_role_id;
 
-        -- Admin role_perm
+        -- SuperAdmin role_perm
         insert into role_perm(role_id, perm_id)
         values (admin_role_id, (select id from perm where app_id = account_app_id and is_all));
 
-        -- Admin user
+        -- Admin role_perm
+        insert into role_perm(role_id, perm_id)
+        values (admin_role_id, (select id from perm where app_id = account_app_id and code in ('acc:m_role', 'acc:m_usr')));
+
+        -- SuperAdmin user
         insert into usr(phone, name)
         values ('70000000000', 'Admin')
         returning id
@@ -118,6 +130,6 @@ $$
 
         -- Admin usr_role
         insert into usr_role(usr_id, role_id)
-        values (admin_usr_id, admin_role_id);
+        values (admin_usr_id, super_admin_role_id);
     end ;
 $$;
