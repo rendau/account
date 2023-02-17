@@ -86,7 +86,7 @@ $$
         account_app_id bigint;
         super_admin_role_id  bigint;
         admin_role_id  bigint;
-        admin_usr_id   bigint;
+        super_admin_usr_id   bigint;
     begin
         -- app
         insert into app(name, perm_url, is_account_app)
@@ -126,10 +126,10 @@ $$
         insert into usr(phone, name)
         values ('70000000000', 'Admin')
         returning id
-            into admin_usr_id;
+            into super_admin_usr_id;
 
-        -- Admin usr_role
+        -- SuperAdmin usr_role
         insert into usr_role(usr_id, role_id)
-        values (admin_usr_id, super_admin_role_id);
+        values (super_admin_usr_id, super_admin_role_id);
     end ;
 $$;

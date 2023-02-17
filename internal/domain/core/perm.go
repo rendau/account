@@ -19,6 +19,7 @@ func NewPerm(r *St) *Perm {
 func (c *Perm) ValidateCU(ctx context.Context, obj *entities.PermCUSt, id int64) error {
 	forCreate := id == 0
 
+	// Code
 	if forCreate && obj.Code == nil {
 		return errs.CodeRequired
 	}
@@ -28,8 +29,18 @@ func (c *Perm) ValidateCU(ctx context.Context, obj *entities.PermCUSt, id int64)
 		}
 	}
 
+	// AppId
 	if forCreate && obj.AppId == nil {
 		return errs.ApplicationRequired
+	}
+	if obj.AppId != nil {
+		exists, err := c.r.App.IdExists(ctx, *obj.AppId)
+		if err != nil {
+			return err
+		}
+		if !exists {
+			return dopErrs.ObjectNotFound
+		}
 	}
 
 	return nil
@@ -83,6 +94,15 @@ func (c *Perm) Create(ctx context.Context, obj *entities.PermCUSt) (int64, error
 func (c *Perm) Update(ctx context.Context, id int64, obj *entities.PermCUSt) error {
 	var err error
 
+	// check if system
+	perm, err := c.Get(ctx, id, true)
+	if err != nil {
+		return err
+	}
+	if perm.IsSystem {
+		return dopErrs.PermissionDenied
+	}
+
 	err = c.ValidateCU(ctx, obj, id)
 	if err != nil {
 		return err
@@ -97,5 +117,14 @@ func (c *Perm) Update(ctx context.Context, id int64, obj *entities.PermCUSt) err
 }
 
 func (c *Perm) Delete(ctx context.Context, id int64) error {
+	// check if system
+	perm, err := c.Get(ctx, id, true)
+	if err != nil {
+		return err
+	}
+	if perm.IsSystem {
+		return dopErrs.PermissionDenied
+	}
+
 	return c.r.repo.PermDelete(ctx, id)
 }
