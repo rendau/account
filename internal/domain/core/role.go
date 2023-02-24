@@ -61,6 +61,15 @@ func (c *Role) Create(ctx context.Context, obj *entities.RoleCUSt) (int64, error
 func (c *Role) Update(ctx context.Context, id int64, obj *entities.RoleCUSt) error {
 	var err error
 
+	// check if system
+	perm, err := c.Get(ctx, id, true)
+	if err != nil {
+		return err
+	}
+	if perm.IsSystem {
+		return dopErrs.PermissionDenied
+	}
+
 	err = c.ValidateCU(ctx, obj, id)
 	if err != nil {
 		return err
@@ -70,5 +79,14 @@ func (c *Role) Update(ctx context.Context, id int64, obj *entities.RoleCUSt) err
 }
 
 func (c *Role) Delete(ctx context.Context, id int64) error {
+	// check if system
+	perm, err := c.Get(ctx, id, true)
+	if err != nil {
+		return err
+	}
+	if perm.IsSystem {
+		return dopErrs.PermissionDenied
+	}
+
 	return c.r.repo.RoleDelete(ctx, id)
 }

@@ -69,6 +69,15 @@ func (c *App) Create(ctx context.Context, obj *entities.AppCUSt) (int64, error) 
 func (c *App) Update(ctx context.Context, id int64, obj *entities.AppCUSt) error {
 	var err error
 
+	// check if system
+	perm, err := c.Get(ctx, id, true)
+	if err != nil {
+		return err
+	}
+	if perm.IsAccountApp {
+		return dopErrs.PermissionDenied
+	}
+
 	err = c.ValidateCU(ctx, obj, id)
 	if err != nil {
 		return err
@@ -83,5 +92,14 @@ func (c *App) Update(ctx context.Context, id int64, obj *entities.AppCUSt) error
 }
 
 func (c *App) Delete(ctx context.Context, id int64) error {
+	// check if system
+	perm, err := c.Get(ctx, id, true)
+	if err != nil {
+		return err
+	}
+	if perm.IsAccountApp {
+		return dopErrs.PermissionDenied
+	}
+
 	return c.r.repo.AppDelete(ctx, id)
 }

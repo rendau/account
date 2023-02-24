@@ -21,10 +21,11 @@ const (
 )
 
 const (
-	PermAll   = "*"
-	PermMPerm = "m_perm"
-	PermMRole = "m_role"
-	PermMUsr  = "m_usr"
+	PermAll   = "acc:*"
+	PermMApp  = "acc:m_app"
+	PermMPerm = "acc:m_perm"
+	PermMRole = "acc:m_role"
+	PermMUsr  = "acc:m_usr"
 )
 
 const (

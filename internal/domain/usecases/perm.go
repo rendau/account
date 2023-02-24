@@ -9,26 +9,26 @@ import (
 
 func (u *St) PermList(ctx context.Context,
 	pars *entities.PermListParsSt) ([]*entities.PermSt, error) {
-	// var err error
-	//
-	// ses := u.SessionGetFromContext(ctx)
-	//
-	// if err = u.SessionRequireAuth(ses); err != nil {
-	// 	return nil, err
-	// }
+	var err error
+
+	ses := u.SessionGetFromContext(ctx)
+
+	if err = u.SessionRequireAuth(ses); err != nil {
+		return nil, err
+	}
 
 	return u.cr.Perm.List(ctx, pars)
 }
 
 func (u *St) PermGet(ctx context.Context,
 	id int64) (*entities.PermSt, error) {
-	// var err error
-	//
-	// ses := u.SessionGetFromContext(ctx)
-	//
-	// if err = u.SessionRequireAuth(ses); err != nil {
-	// 	return nil, err
-	// }
+	var err error
+
+	ses := u.SessionGetFromContext(ctx)
+
+	if err = u.SessionRequireAuth(ses); err != nil {
+		return nil, err
+	}
 
 	return u.cr.Perm.Get(ctx, id, true)
 }

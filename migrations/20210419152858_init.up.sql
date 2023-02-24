@@ -83,10 +83,10 @@ create index usr_role_usr_id_idx
 do
 $$
     declare
-        account_app_id bigint;
-        super_admin_role_id  bigint;
-        admin_role_id  bigint;
-        super_admin_usr_id   bigint;
+        account_app_id      bigint;
+        super_admin_role_id bigint;
+        admin_role_id       bigint;
+        super_admin_usr_id  bigint;
     begin
         -- app
         insert into app(name, perm_url, is_account_app)
@@ -116,15 +116,18 @@ $$
 
         -- SuperAdmin role_perm
         insert into role_perm(role_id, perm_id)
-        values (admin_role_id, (select id from perm where app_id = account_app_id and is_all));
+        values (super_admin_role_id, (select id from perm where app_id = account_app_id and is_all));
 
         -- Admin role_perm
         insert into role_perm(role_id, perm_id)
-        values (admin_role_id, (select id from perm where app_id = account_app_id and code in ('acc:m_role', 'acc:m_usr')));
+        select admin_role_id, id
+        from perm
+        where app_id = account_app_id
+          and code in ('acc:m_role', 'acc:m_usr');
 
         -- SuperAdmin user
         insert into usr(phone, name)
-        values ('70000000000', 'Admin')
+        values ('70000000000', 'SAdmin')
         returning id
             into super_admin_usr_id;
 
