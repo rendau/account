@@ -34,12 +34,12 @@ func (c *Perm) ValidateCU(ctx context.Context, obj *entities.PermCUSt, id int64)
 		return errs.ApplicationRequired
 	}
 	if obj.AppId != nil {
-		exists, err := c.r.App.IdExists(ctx, *obj.AppId)
+		app, err := c.r.App.Get(ctx, *obj.AppId, true)
 		if err != nil {
 			return err
 		}
-		if !exists {
-			return dopErrs.ObjectNotFound
+		if app.IsAccountApp {
+			return dopErrs.PermissionDenied
 		}
 	}
 
