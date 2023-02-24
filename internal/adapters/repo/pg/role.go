@@ -48,6 +48,17 @@ func (d *St) RoleList(ctx context.Context, pars *entities.RoleListParsSt) ([]*en
 		conds = append(conds, `id in (select * from unnest(${ids} :: bigint[]))`)
 		args["ids"] = *pars.Ids
 	}
+	if pars.IsSystem != nil {
+		if *pars.IsSystem {
+			conds = append(conds, `is_system = true`)
+		} else {
+			conds = append(conds, `is_system = false`)
+		}
+	}
+	if pars.Code != nil {
+		conds = append(conds, `code = ${code}`)
+		args["code"] = *pars.Code
+	}
 
 	result := make([]*entities.RoleListSt, 0)
 

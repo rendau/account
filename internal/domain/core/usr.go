@@ -243,6 +243,10 @@ func (c *Usr) IdsExists(ctx context.Context, ids []int64) (bool, error) {
 	return c.r.repo.UsrIdsExists(ctx, ids)
 }
 
+func (c *Usr) IsSAdmin(ctx context.Context, id int64) (bool, error) {
+	return c.r.repo.UsrIsSAdmin(ctx, id)
+}
+
 func (c *Usr) PhoneExists(ctx context.Context, phone string, excludeId int64) (bool, error) {
 	return c.r.repo.UsrPhoneExists(ctx, phone, excludeId)
 }

@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/rendau/account/internal/cns"
 	"github.com/rendau/account/internal/domain/entities"
 	"github.com/rendau/dop/adapters/db"
 	"github.com/rendau/dop/dopErrs"
@@ -149,6 +150,19 @@ func (d *St) UsrPhoneExists(ctx context.Context, phone string, excludeId int64) 
 		where phone = $1
 			and id != $2
 	`, phone, excludeId).Scan(&cnt)
+
+	return cnt > 0, err
+}
+
+func (d *St) UsrIsSAdmin(ctx context.Context, id int64) (bool, error) {
+	var cnt int
+
+	err := d.DbQueryRow(ctx, `
+		select count(*)
+		from usr_role ur
+			join role r on r.id = ur.role_id and r.code = $2
+		where usr_id = $1
+	`, id, cns.RoleCodeSuperAdmin).Scan(&cnt)
 
 	return cnt > 0, err
 }

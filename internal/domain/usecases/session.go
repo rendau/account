@@ -38,6 +38,16 @@ func (u *St) SessionRequirePerm(ses *entities.Session, strict bool, perm string)
 	return dopErrs.PermissionDenied
 }
 
+func (u *St) SessionIsSAdmin(ses *entities.Session) bool {
+	for _, sPerm := range ses.Perms {
+		if sPerm == cns.PermAll {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (u *St) SessionSetToContext(ctx context.Context, ses *entities.Session) context.Context {
 	return u.cr.Session.SetToContext(ctx, ses)
 }

@@ -23,7 +23,9 @@ type RoleListSt struct {
 type RoleListParsSt struct {
 	dopTypes.ListParams
 
-	Ids *[]int64 `json:"ids" form:"ids"`
+	Ids      *[]int64 `json:"ids" form:"ids"`
+	Code     *string  `json:"code" form:"code"`
+	IsSystem *bool    `json:"is_system" form:"is_system"`
 }
 
 type RoleCUSt struct {

@@ -10,6 +10,8 @@ const (
 
 var (
 	AppTimeLocation = time.FixedZone("AST", 21600) // +0600
+	True            = true
+	False           = false
 )
 
 const (
@@ -17,7 +19,8 @@ const (
 )
 
 const (
-	RoleAdmin = "admin"
+	RoleCodeSuperAdmin = "acc:super_admin"
+	RoleCodeAdmin      = "acc:admin"
 )
 
 const (

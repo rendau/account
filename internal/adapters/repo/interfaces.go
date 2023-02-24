@@ -12,6 +12,7 @@ type Repo interface {
 	UsrGet(ctx context.Context, pars *entities.UsrGetParsSt) (*entities.UsrSt, error)
 	UsrIdExists(ctx context.Context, id int64) (bool, error)
 	UsrIdsExists(ctx context.Context, ids []int64) (bool, error)
+	UsrIsSAdmin(ctx context.Context, id int64) (bool, error)
 	UsrPhoneExists(ctx context.Context, phone string, excludeId int64) (bool, error)
 	UsrGetToken(ctx context.Context, id int64) (string, error)
 	UsrSetToken(ctx context.Context, id int64, token string) error

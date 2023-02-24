@@ -5,7 +5,9 @@ import (
 
 	"github.com/rendau/account/internal/cns"
 	"github.com/rendau/account/internal/domain/entities"
+	"github.com/rendau/dop/dopErrs"
 	"github.com/rendau/dop/dopTools"
+	"github.com/rendau/dop/dopTypes"
 )
 
 func (u *St) UsrList(ctx context.Context,
@@ -48,6 +50,21 @@ func (u *St) UsrCreate(ctx context.Context,
 		return 0, err
 	}
 
+	// check if super admin role is not set
+	if !u.SessionIsSAdmin(ses) && len(obj.RoleIds) > 0 {
+		items, err := u.cr.Role.List(ctx, &entities.RoleListParsSt{
+			ListParams: dopTypes.ListParams{PageSize: 1},
+			Ids:        &obj.RoleIds,
+			Code:       dopTools.NewPtr(cns.RoleCodeSuperAdmin),
+		})
+		if err != nil {
+			return 0, err
+		}
+		if len(items) > 0 {
+			return 0, dopErrs.PermissionDenied
+		}
+	}
+
 	var result int64
 
 	err = u.db.TransactionFn(ctx, func(ctx context.Context) error {
@@ -68,6 +85,26 @@ func (u *St) UsrUpdate(ctx context.Context,
 		return err
 	}
 
+	// check if super admin role is not changed
+	if !u.SessionIsSAdmin(ses) && obj.RoleIds != nil {
+		usrIsSAdmin, err := u.cr.Usr.IsSAdmin(ctx, id)
+		if err != nil {
+			return err
+		}
+
+		items, err := u.cr.Role.List(ctx, &entities.RoleListParsSt{
+			ListParams: dopTypes.ListParams{PageSize: 1},
+			Ids:        &obj.RoleIds,
+			Code:       dopTools.NewPtr(cns.RoleCodeSuperAdmin),
+		})
+		if err != nil {
+			return err
+		}
+		if len(items) > 0 != usrIsSAdmin {
+			return dopErrs.PermissionDenied
+		}
+	}
+
 	return u.db.TransactionFn(ctx, func(ctx context.Context) error {
 		return u.cr.Usr.Update(ctx, id, obj)
 	})
@@ -81,6 +118,17 @@ func (u *St) UsrDelete(ctx context.Context,
 
 	if err = u.SessionRequirePerm(ses, false, cns.PermMUsr); err != nil {
 		return err
+	}
+
+	// check if super admin deleted
+	if !u.SessionIsSAdmin(ses) {
+		usrIsSAdmin, err := u.cr.Usr.IsSAdmin(ctx, id)
+		if err != nil {
+			return err
+		}
+		if usrIsSAdmin {
+			return dopErrs.PermissionDenied
+		}
 	}
 
 	return u.db.TransactionFn(ctx, func(ctx context.Context) error {

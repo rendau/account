@@ -3,6 +3,7 @@ package entities
 import (
 	"time"
 
+	"github.com/rendau/account/internal/cns"
 	"github.com/rendau/dop/dopTypes"
 )
 
@@ -96,6 +97,15 @@ func (u *UsrSt) GetRoleCodes() []string {
 		res[i] = r.Code
 	}
 	return res
+}
+
+func (u *UsrSt) HasSAdminRole() bool {
+	for _, r := range u.Roles {
+		if r.Code == cns.RoleCodeSuperAdmin {
+			return true
+		}
+	}
+	return false
 }
 
 func (u *UsrSt) GetPermCodes() []string {
