@@ -38,6 +38,14 @@ func (u *St) SessionRequirePerm(ses *entities.Session, strict bool, perm string)
 	return dopErrs.PermissionDenied
 }
 
+func (u *St) SessionRequireSAdmin(ses *entities.Session) error {
+	if !u.SessionIsSAdmin(ses) {
+		return dopErrs.PermissionDenied
+	}
+
+	return nil
+}
+
 func (u *St) SessionIsSAdmin(ses *entities.Session) bool {
 	for _, sPerm := range ses.Perms {
 		if sPerm == cns.PermAll {

@@ -7,6 +7,10 @@ import (
 )
 
 type Repo interface {
+	// config
+	ConfigGet(ctx context.Context) (*entities.ConfigSt, error)
+	ConfigSet(ctx context.Context, config *entities.ConfigSt) error
+
 	// usr
 	UsrList(ctx context.Context, pars *entities.UsrListParsSt) ([]*entities.UsrListSt, int64, error)
 	UsrGet(ctx context.Context, pars *entities.UsrGetParsSt) (*entities.UsrSt, error)

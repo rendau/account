@@ -234,6 +234,61 @@
                 }
             }
         },
+        "/config": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "config"
+                ],
+                "summary": "Get configs",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.ConfigSt"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dopTypes.ErrRep"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "config"
+                ],
+                "summary": "Update configs",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/entities.ConfigSt"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dopTypes.ErrRep"
+                        }
+                    }
+                }
+            }
+        },
         "/dic": {
             "get": {
                 "description": "Get all dictionaries",
@@ -275,6 +330,11 @@
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "name": "code",
+                        "in": "query"
+                    },
+                    {
                         "type": "array",
                         "items": {
                             "type": "string"
@@ -288,6 +348,11 @@
                             "type": "integer"
                         },
                         "name": "ids",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "is_system",
                         "in": "query"
                     },
                     {
@@ -729,6 +794,11 @@
                 ],
                 "parameters": [
                     {
+                        "type": "string",
+                        "name": "code",
+                        "in": "query"
+                    },
+                    {
                         "type": "array",
                         "items": {
                             "type": "string"
@@ -742,6 +812,11 @@
                             "type": "integer"
                         },
                         "name": "ids",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "is_system",
                         "in": "query"
                     },
                     {
@@ -1274,6 +1349,17 @@
                 }
             }
         },
+        "entities.ConfigSt": {
+            "type": "object",
+            "properties": {
+                "access_token_dur_seconds": {
+                    "type": "integer"
+                },
+                "refresh_token_dur_seconds": {
+                    "type": "integer"
+                }
+            }
+        },
         "entities.DicDataSt": {
             "type": "object",
             "properties": {
@@ -1302,6 +1388,9 @@
                 },
                 "dsc": {
                     "type": "string"
+                },
+                "is_all": {
+                    "type": "boolean"
                 }
             }
         },
@@ -1319,6 +1408,9 @@
                 },
                 "id": {
                     "type": "integer"
+                },
+                "is_all": {
+                    "type": "boolean"
                 },
                 "is_system": {
                     "type": "boolean"
@@ -1459,6 +1551,12 @@
                 "name": {
                     "type": "string"
                 },
+                "perm_codes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "perm_ids": {
                     "type": "array",
                     "items": {
@@ -1473,6 +1571,12 @@
                 },
                 "phone": {
                     "type": "string"
+                },
+                "role_codes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "role_ids": {
                     "type": "array",

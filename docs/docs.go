@@ -246,6 +246,61 @@ const docTemplate = `{
                 }
             }
         },
+        "/config": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "config"
+                ],
+                "summary": "Get configs",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entities.ConfigSt"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dopTypes.ErrRep"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "config"
+                ],
+                "summary": "Update configs",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/entities.ConfigSt"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/dopTypes.ErrRep"
+                        }
+                    }
+                }
+            }
+        },
         "/dic": {
             "get": {
                 "description": "Get all dictionaries",
@@ -287,6 +342,11 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
+                        "type": "string",
+                        "name": "code",
+                        "in": "query"
+                    },
+                    {
                         "type": "array",
                         "items": {
                             "type": "string"
@@ -300,6 +360,11 @@ const docTemplate = `{
                             "type": "integer"
                         },
                         "name": "ids",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "is_system",
                         "in": "query"
                     },
                     {
@@ -741,6 +806,11 @@ const docTemplate = `{
                 ],
                 "parameters": [
                     {
+                        "type": "string",
+                        "name": "code",
+                        "in": "query"
+                    },
+                    {
                         "type": "array",
                         "items": {
                             "type": "string"
@@ -754,6 +824,11 @@ const docTemplate = `{
                             "type": "integer"
                         },
                         "name": "ids",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "name": "is_system",
                         "in": "query"
                     },
                     {
@@ -1286,6 +1361,17 @@ const docTemplate = `{
                 }
             }
         },
+        "entities.ConfigSt": {
+            "type": "object",
+            "properties": {
+                "access_token_dur_seconds": {
+                    "type": "integer"
+                },
+                "refresh_token_dur_seconds": {
+                    "type": "integer"
+                }
+            }
+        },
         "entities.DicDataSt": {
             "type": "object",
             "properties": {
@@ -1314,6 +1400,9 @@ const docTemplate = `{
                 },
                 "dsc": {
                     "type": "string"
+                },
+                "is_all": {
+                    "type": "boolean"
                 }
             }
         },
@@ -1331,6 +1420,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "is_all": {
+                    "type": "boolean"
                 },
                 "is_system": {
                     "type": "boolean"
@@ -1471,6 +1563,12 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "perm_codes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "perm_ids": {
                     "type": "array",
                     "items": {
@@ -1485,6 +1583,12 @@ const docTemplate = `{
                 },
                 "phone": {
                     "type": "string"
+                },
+                "role_codes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "role_ids": {
                     "type": "array",

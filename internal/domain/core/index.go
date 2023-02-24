@@ -27,10 +27,11 @@ type St struct {
 	System  *System
 	Session *Session
 
-	Perm *Perm
-	Role *Role
-	Usr  *Usr
-	App  *App
+	Config *Config
+	Perm   *Perm
+	Role   *Role
+	Usr    *Usr
+	App    *App
 }
 
 func New(
@@ -58,6 +59,7 @@ func New(
 	c.System = NewSystem(c)
 	c.Session = NewSession(c)
 
+	c.Config = NewConfig(c)
 	c.Perm = NewPerm(c)
 	c.Role = NewRole(c)
 	c.Usr = NewUsr(c)

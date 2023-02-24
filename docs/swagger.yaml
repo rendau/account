@@ -59,6 +59,13 @@ definitions:
       refresh_token:
         type: string
     type: object
+  entities.ConfigSt:
+    properties:
+      access_token_dur_seconds:
+        type: integer
+      refresh_token_dur_seconds:
+        type: integer
+    type: object
   entities.DicDataSt:
     properties:
       apps:
@@ -78,6 +85,8 @@ definitions:
         type: string
       dsc:
         type: string
+      is_all:
+        type: boolean
     type: object
   entities.PermSt:
     properties:
@@ -89,6 +98,8 @@ definitions:
         type: string
       id:
         type: integer
+      is_all:
+        type: boolean
       is_system:
         type: boolean
     type: object
@@ -179,6 +190,10 @@ definitions:
         type: integer
       name:
         type: string
+      perm_codes:
+        items:
+          type: string
+        type: array
       perm_ids:
         items:
           type: integer
@@ -189,6 +204,10 @@ definitions:
         type: array
       phone:
         type: string
+      role_codes:
+        items:
+          type: string
+        type: array
       role_ids:
         items:
           type: integer
@@ -380,6 +399,41 @@ paths:
             $ref: '#/definitions/dopTypes.ErrRep'
       tags:
       - app
+  /config:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entities.ConfigSt'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      summary: Get configs
+      tags:
+      - config
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: body
+        in: body
+        name: body
+        schema:
+          $ref: '#/definitions/entities.ConfigSt'
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/dopTypes.ErrRep'
+      summary: Update configs
+      tags:
+      - config
   /dic:
     get:
       description: Get all dictionaries
@@ -404,6 +458,9 @@ paths:
         name: app_id
         type: integer
       - in: query
+        name: code
+        type: string
+      - in: query
         items:
           type: string
         name: cols
@@ -413,6 +470,9 @@ paths:
           type: integer
         name: ids
         type: array
+      - in: query
+        name: is_system
+        type: boolean
       - in: query
         name: only_count
         type: boolean
@@ -684,6 +744,9 @@ paths:
     get:
       parameters:
       - in: query
+        name: code
+        type: string
+      - in: query
         items:
           type: string
         name: cols
@@ -693,6 +756,9 @@ paths:
           type: integer
         name: ids
         type: array
+      - in: query
+        name: is_system
+        type: boolean
       - in: query
         name: only_count
         type: boolean

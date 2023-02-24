@@ -9,26 +9,26 @@ import (
 
 func (u *St) RoleList(ctx context.Context,
 	pars *entities.RoleListParsSt) ([]*entities.RoleListSt, error) {
-	var err error
-
-	ses := u.SessionGetFromContext(ctx)
-
-	if err = u.SessionRequireAuth(ses); err != nil {
-		return nil, err
-	}
+	// var err error
+	//
+	// ses := u.SessionGetFromContext(ctx)
+	//
+	// if err = u.SessionRequireAuth(ses); err != nil {
+	// 	return nil, err
+	// }
 
 	return u.cr.Role.List(ctx, pars)
 }
 
 func (u *St) RoleGet(ctx context.Context,
 	id int64) (*entities.RoleSt, error) {
-	var err error
-
-	ses := u.SessionGetFromContext(ctx)
-
-	if err = u.SessionRequireAuth(ses); err != nil {
-		return nil, err
-	}
+	// var err error
+	//
+	// ses := u.SessionGetFromContext(ctx)
+	//
+	// if err = u.SessionRequireAuth(ses); err != nil {
+	// 	return nil, err
+	// }
 
 	return u.cr.Role.Get(ctx, id, true)
 }

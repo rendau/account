@@ -52,6 +52,10 @@ func GetHandler(lg logger.Lite, ucs *usecases.St, withCors bool) http.Handler {
 	// dic
 	r.GET("/dic", s.hDicGet)
 
+	// config
+	r.GET("/config", s.hConfigGet)
+	r.PUT("/config", s.hConfigUpdate)
+
 	// profile
 	r.POST("/profile/send_validating_code", s.hProfileSendPhoneValidatingCode)
 	r.POST("/profile/auth", s.hProfileAuth)

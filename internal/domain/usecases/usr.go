@@ -14,11 +14,11 @@ func (u *St) UsrList(ctx context.Context,
 	pars *entities.UsrListParsSt) ([]*entities.UsrListSt, int64, error) {
 	var err error
 
-	ses := u.SessionGetFromContext(ctx)
-
-	if err = u.SessionRequireAuth(ses); err != nil {
-		return nil, 0, err
-	}
+	// ses := u.SessionGetFromContext(ctx)
+	//
+	// if err = u.SessionRequireAuth(ses); err != nil {
+	// 	return nil, 0, err
+	// }
 
 	if err = dopTools.RequirePageSize(pars.ListParams, cns.MaxPageSize); err != nil {
 		return nil, 0, err
@@ -29,13 +29,13 @@ func (u *St) UsrList(ctx context.Context,
 
 func (u *St) UsrGet(ctx context.Context,
 	id int64) (*entities.UsrSt, error) {
-	var err error
-
-	ses := u.SessionGetFromContext(ctx)
-
-	if err = u.SessionRequireAuth(ses); err != nil {
-		return nil, err
-	}
+	// var err error
+	//
+	// ses := u.SessionGetFromContext(ctx)
+	//
+	// if err = u.SessionRequireAuth(ses); err != nil {
+	// 	return nil, err
+	// }
 
 	return u.cr.Usr.Get(ctx, &entities.UsrGetParsSt{Id: &id}, true)
 }

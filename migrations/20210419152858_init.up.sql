@@ -58,8 +58,7 @@ create table usr
     phone      text        not null
         constraint usr_unique_phone unique,
     ava        text        not null default '',
-    name       text        not null default '',
-    token      text        not null default ''
+    name       text        not null default ''
 );
 create index usr_created_at_idx
     on usr (created_at);
@@ -67,8 +66,6 @@ create index usr_active_idx
     on usr (active);
 create index usr_phone_idx
     on usr (phone);
-create index usr_token_idx
-    on usr (token);
 
 create table usr_role
 (
@@ -88,6 +85,13 @@ $$
         admin_role_id       bigint;
         super_admin_usr_id  bigint;
     begin
+        -- cfg
+        insert into cfg(v)
+        values ('{
+          "refresh_token_dur_seconds": 1296000,
+          "access_token_dur_seconds": 600
+        }');
+
         -- app
         insert into app(name, perm_url, is_account_app)
         values ('Account', '', true)

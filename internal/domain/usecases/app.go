@@ -9,15 +9,11 @@ import (
 
 func (u *St) AppList(ctx context.Context,
 	pars *entities.AppListParsSt) ([]*entities.AppSt, int64, error) {
-	var err error
-
-	ses := u.SessionGetFromContext(ctx)
-
-	if err = u.SessionRequireAuth(ses); err != nil {
-		return nil, 0, err
-	}
-
-	// if err = dopTools.RequirePageSize(pars.ListParams, cns.MaxPageSize); err != nil {
+	// var err error
+	//
+	// ses := u.SessionGetFromContext(ctx)
+	//
+	// if err = u.SessionRequireAuth(ses); err != nil {
 	// 	return nil, 0, err
 	// }
 
@@ -25,13 +21,13 @@ func (u *St) AppList(ctx context.Context,
 }
 
 func (u *St) AppGet(ctx context.Context, id int64) (*entities.AppSt, error) {
-	var err error
-
-	ses := u.SessionGetFromContext(ctx)
-
-	if err = u.SessionRequireAuth(ses); err != nil {
-		return nil, err
-	}
+	// var err error
+	//
+	// ses := u.SessionGetFromContext(ctx)
+	//
+	// if err = u.SessionRequireAuth(ses); err != nil {
+	// 	return nil, err
+	// }
 
 	return u.cr.App.Get(ctx, id, true)
 }

@@ -10,12 +10,12 @@ import (
 	"github.com/rendau/dop/dopTypes"
 )
 
-// @Router   /usr [get]
-// @Tags     usr
-// @Param    query  query  entities.UsrListParsSt  false  "query"
-// @Produce  json
-// @Success  200  {object}  dopTypes.PaginatedListRep{results=[]entities.UsrListSt}
-// @Failure  400  {object}  dopTypes.ErrRep
+// @Router  /usr [get]
+// @Tags    usr
+// @Param   query query entities.UsrListParsSt false "query"
+// @Produce json
+// @Success 200 {object} dopTypes.PaginatedListRep{results=[]entities.UsrListSt}
+// @Failure 400 {object} dopTypes.ErrRep
 func (o *St) hUsrList(c *gin.Context) {
 	pars := &entities.UsrListParsSt{}
 	if !dopHttps.BindQuery(c, pars) {
@@ -35,12 +35,12 @@ func (o *St) hUsrList(c *gin.Context) {
 	})
 }
 
-// @Router   /usr [post]
-// @Tags     usr
-// @Param    body  body  entities.UsrCUSt  false  "body"
-// @Produce  json
-// @Success  200  {object}  dopTypes.CreateRep{id=int}
-// @Failure  400  {object}  dopTypes.ErrRep
+// @Router  /usr [post]
+// @Tags    usr
+// @Param   body body entities.UsrCUSt false "body"
+// @Produce json
+// @Success 200 {object} dopTypes.CreateRep{id=int}
+// @Failure 400 {object} dopTypes.ErrRep
 func (o *St) hUsrCreate(c *gin.Context) {
 	reqObj := &entities.UsrCUSt{}
 	if !dopHttps.BindJSON(c, reqObj) {
@@ -55,12 +55,12 @@ func (o *St) hUsrCreate(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"id": newId})
 }
 
-// @Router   /usr/:id [get]
-// @Tags     usr
-// @Param    id  path  integer  true  "id"
-// @Produce  json
-// @Success  200  {object}  entities.UsrSt
-// @Failure  400  {object}  dopTypes.ErrRep
+// @Router  /usr/:id [get]
+// @Tags    usr
+// @Param   id path integer true "id"
+// @Produce json
+// @Success 200 {object} entities.UsrSt
+// @Failure 400 {object} dopTypes.ErrRep
 func (o *St) hUsrGet(c *gin.Context) {
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
@@ -72,13 +72,13 @@ func (o *St) hUsrGet(c *gin.Context) {
 	c.JSON(http.StatusOK, result)
 }
 
-// @Router   /usr/:id [put]
-// @Tags     usr
-// @Param    id    path  string            true   "id"
-// @Param    body  body  entities.UsrCUSt  false  "body"
-// @Produce  json
-// @Success  200
-// @Failure  400  {object}  dopTypes.ErrRep
+// @Router  /usr/:id [put]
+// @Tags    usr
+// @Param   id   path string           true  "id"
+// @Param   body body entities.UsrCUSt false "body"
+// @Produce json
+// @Success 200
+// @Failure 400 {object} dopTypes.ErrRep
 func (o *St) hUsrUpdate(c *gin.Context) {
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
@@ -90,12 +90,12 @@ func (o *St) hUsrUpdate(c *gin.Context) {
 	dopHttps.Error(c, o.ucs.UsrUpdate(o.getRequestContext(c), id, reqObj))
 }
 
-// @Router   /usr/:id [delete]
-// @Tags     usr
-// @Param    id  path  string  true  "id"
-// @Produce  json
-// @Success  200
-// @Failure  400  {object}  dopTypes.ErrRep
+// @Router  /usr/:id [delete]
+// @Tags    usr
+// @Param   id path string true "id"
+// @Produce json
+// @Success 200
+// @Failure 400 {object} dopTypes.ErrRep
 func (o *St) hUsrDelete(c *gin.Context) {
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
