@@ -79,6 +79,7 @@ func GetHandler(lg logger.Lite, ucs *usecases.St, withCors bool) http.Handler {
 	r.GET("/usr/:id", s.hUsrGet)
 	r.PUT("/usr/:id", s.hUsrUpdate)
 	r.DELETE("/usr/:id", s.hUsrDelete)
+	r.PUT("/usr/:id/generate_and_save_access_token", s.hUsrGenerateAndSaveAccessToken)
 
 	// perm
 	r.GET("/perm", s.hPermList)

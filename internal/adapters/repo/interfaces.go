@@ -22,6 +22,7 @@ type Repo interface {
 	UsrGetPermIds(ctx context.Context, id int64) ([]int64, error)
 	UsrGetPhone(ctx context.Context, id int64) (string, error)
 	UsrGetIdForPhone(ctx context.Context, phone string) (int64, error)
+	UsrSetToken(ctx context.Context, id int64, token string) error
 	UsrCreate(ctx context.Context, obj *entities.UsrCUSt) (int64, error)
 	UsrUpdate(ctx context.Context, id int64, obj *entities.UsrCUSt) error
 	UsrDelete(ctx context.Context, id int64) error

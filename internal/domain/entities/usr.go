@@ -13,6 +13,7 @@ type UsrSt struct {
 	Phone     string    `json:"phone" db:"phone"`
 	Ava       string    `json:"ava" db:"ava"`
 	Name      string    `json:"name" db:"name"`
+	Token     string    `json:"token" db:"token"`
 
 	RoleIds []int64 `json:"role_ids" db:"role_ids"`
 	PermIds []int64 `json:"perm_ids" db:"perm_ids"`

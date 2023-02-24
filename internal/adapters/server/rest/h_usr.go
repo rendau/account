@@ -90,6 +90,28 @@ func (o *St) hUsrUpdate(c *gin.Context) {
 	dopHttps.Error(c, o.ucs.UsrUpdate(o.getRequestContext(c), id, reqObj))
 }
 
+// @Router  /usr/:id/generate_and_save_access_token [put]
+// @Tags    usr
+// @Param   id   path string           true  "id"
+// @Produce json
+// @Success 200 {object} entities.AuthByTokenRepSt
+// @Failure 400 {object} dopTypes.ErrRep
+func (o *St) hUsrGenerateAndSaveAccessToken(c *gin.Context) {
+	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
+
+	reqObj := &entities.UsrCUSt{}
+	if !dopHttps.BindJSON(c, reqObj) {
+		return
+	}
+
+	result, err := o.ucs.UsrGenerateAndSaveAccessToken(o.getRequestContext(c), id)
+	if dopHttps.Error(c, err) {
+		return
+	}
+
+	c.JSON(http.StatusOK, entities.AuthByTokenRepSt{AccessToken: result})
+}
+
 // @Router  /usr/:id [delete]
 // @Tags    usr
 // @Param   id path string true "id"

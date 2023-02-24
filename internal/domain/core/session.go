@@ -69,10 +69,10 @@ func (c *Session) GetFromContext(ctx context.Context) *entities.Session {
 	}
 }
 
-func (c *Session) CreateToken(ses *entities.Session) (string, error) {
+func (c *Session) CreateToken(ses *entities.Session, durSeconds int64) (string, error) {
 	token, _ := c.r.jwts.Create(
 		strconv.FormatInt(ses.Id, 10),
-		sessionDur,
+		durSeconds,
 		map[string]any{
 			"roles": ses.Roles,
 			"perms": ses.Perms,

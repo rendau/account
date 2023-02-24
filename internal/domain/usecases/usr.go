@@ -110,6 +110,26 @@ func (u *St) UsrUpdate(ctx context.Context,
 	})
 }
 
+func (u *St) UsrGenerateAndSaveAccessToken(ctx context.Context,
+	id int64) (string, error) {
+	var err error
+
+	ses := u.SessionGetFromContext(ctx)
+
+	if err = u.SessionRequireSAdmin(ses); err != nil {
+		return "", err
+	}
+
+	var result string
+
+	err = u.db.TransactionFn(ctx, func(ctx context.Context) error {
+		result, err = u.cr.Usr.GenerateAndSaveAccessToken(ctx, id)
+		return err
+	})
+
+	return result, err
+}
+
 func (u *St) UsrDelete(ctx context.Context,
 	id int64) error {
 	var err error

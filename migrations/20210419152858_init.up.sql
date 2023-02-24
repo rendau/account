@@ -58,7 +58,8 @@ create table usr
     phone      text        not null
         constraint usr_unique_phone unique,
     ava        text        not null default '',
-    name       text        not null default ''
+    name       text        not null default '',
+    token      text        not null default ''
 );
 create index usr_created_at_idx
     on usr (created_at);
