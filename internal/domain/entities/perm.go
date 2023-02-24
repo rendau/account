@@ -16,8 +16,10 @@ type PermSt struct {
 type PermListParsSt struct {
 	dopTypes.ListParams
 
-	Ids   *[]int64 `json:"ids" form:"ids"`
-	AppId *int64   `json:"app_id" form:"app_id"`
+	Ids      *[]int64 `json:"ids" form:"ids"`
+	AppId    *int64   `json:"app_id" form:"app_id"`
+	Code     *string  `json:"code" form:"code"`
+	IsSystem *bool    `json:"is_system" form:"is_system"`
 }
 
 type PermCUSt struct {

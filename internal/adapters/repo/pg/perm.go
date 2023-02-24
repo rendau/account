@@ -41,6 +41,17 @@ func (d *St) PermList(ctx context.Context, pars *entities.PermListParsSt) ([]*en
 		conds = append(conds, `app_id = ${app_id}`)
 		args["app_id"] = *pars.AppId
 	}
+	if pars.Code != nil {
+		conds = append(conds, `code = ${code}`)
+		args["code"] = *pars.Code
+	}
+	if pars.IsSystem != nil {
+		if *pars.IsSystem {
+			conds = append(conds, `is_system is true`)
+		} else {
+			conds = append(conds, `is_system is false`)
+		}
+	}
 
 	result := make([]*entities.PermSt, 0)
 

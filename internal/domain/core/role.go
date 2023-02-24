@@ -3,6 +3,7 @@ package core
 import (
 	"context"
 
+	"github.com/rendau/account/internal/cns"
 	"github.com/rendau/account/internal/domain/entities"
 	"github.com/rendau/dop/dopErrs"
 )
@@ -55,6 +56,19 @@ func (c *Role) Create(ctx context.Context, obj *entities.RoleCUSt) (int64, error
 		return 0, err
 	}
 
+	if len(obj.PermIds) > 0 {
+		perms, err := c.r.Perm.List(ctx, &entities.PermListParsSt{
+			Ids:      &obj.PermIds,
+			IsSystem: &cns.True,
+		})
+		if err != nil {
+			return 0, err
+		}
+		if len(perms) > 0 {
+			return 0, dopErrs.PermissionDenied
+		}
+	}
+
 	return c.r.repo.RoleCreate(ctx, obj)
 }
 
@@ -73,6 +87,19 @@ func (c *Role) Update(ctx context.Context, id int64, obj *entities.RoleCUSt) err
 	err = c.ValidateCU(ctx, obj, id)
 	if err != nil {
 		return err
+	}
+
+	if len(obj.PermIds) > 0 {
+		perms, err := c.r.Perm.List(ctx, &entities.PermListParsSt{
+			Ids:      &obj.PermIds,
+			IsSystem: &cns.True,
+		})
+		if err != nil {
+			return err
+		}
+		if len(perms) > 0 {
+			return dopErrs.PermissionDenied
+		}
 	}
 
 	return c.r.repo.RoleUpdate(ctx, id, obj)
