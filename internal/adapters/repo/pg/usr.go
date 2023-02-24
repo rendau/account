@@ -73,10 +73,6 @@ func (d *St) UsrGet(ctx context.Context, pars *entities.UsrGetParsSt) (*entities
 		conds = append(conds, `phone = ${phone}`)
 		args["phone"] = *pars.Phone
 	}
-	if pars.Token != nil {
-		conds = append(conds, `token = ${token}`)
-		args["token"] = *pars.Token
-	}
 
 	result := &entities.UsrSt{}
 
@@ -165,22 +161,6 @@ func (d *St) UsrIsSAdmin(ctx context.Context, id int64) (bool, error) {
 	`, id, cns.RoleCodeSuperAdmin).Scan(&cnt)
 
 	return cnt > 0, err
-}
-
-func (d *St) UsrGetToken(ctx context.Context, id int64) (string, error) {
-	var token string
-
-	err := d.DbQueryRow(ctx, `
-		select token
-		from usr
-		where id = $1
-	`, id).Scan(&token)
-
-	return token, err
-}
-
-func (d *St) UsrSetToken(ctx context.Context, id int64, token string) error {
-	return d.DbExec(ctx, `update usr set token = $2 where id = $1`, id, token)
 }
 
 func (d *St) UsrGetRoleIds(ctx context.Context, id int64) ([]int64, error) {

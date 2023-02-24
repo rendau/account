@@ -204,7 +204,7 @@ func (c *Usr) Get(ctx context.Context, pars *entities.UsrGetParsSt, errNE bool) 
 
 	var result *entities.UsrSt
 
-	if pars.Id != nil || pars.Phone != nil || pars.Token != nil {
+	if pars.Id != nil || pars.Phone != nil {
 		result, err = c.r.repo.UsrGet(ctx, pars)
 		if err != nil {
 			return nil, err
@@ -251,36 +251,12 @@ func (c *Usr) PhoneExists(ctx context.Context, phone string, excludeId int64) (b
 	return c.r.repo.UsrPhoneExists(ctx, phone, excludeId)
 }
 
-func (c *Usr) GetToken(ctx context.Context, id int64) (string, error) {
-	return c.r.repo.UsrGetToken(ctx, id)
-}
-
-func (c *Usr) GenerateAndSaveToken(ctx context.Context, id int64) (string, error) {
-	token, _ := c.r.jwts.Create(
+func (c *Usr) GenerateRefreshToken(ctx context.Context, id int64) (string, error) {
+	return c.r.jwts.Create(
 		strconv.FormatInt(id, 10),
 		refreshTokenDur,
 		map[string]any{},
 	)
-
-	err := c.SetToken(ctx, id, token)
-	if err != nil {
-		return "", err
-	}
-
-	return token, nil
-}
-
-func (c *Usr) SetToken(ctx context.Context, id int64, v string) error {
-	err := c.r.repo.UsrSetToken(ctx, id, v)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (c *Usr) ResetToken(ctx context.Context, id int64) error {
-	return c.SetToken(ctx, id, "")
 }
 
 func (c *Usr) GetRoleIds(ctx context.Context, id int64) ([]int64, error) {
@@ -338,16 +314,9 @@ func (c *Usr) Auth(ctx context.Context, obj *entities.PhoneAndSmsCodeSt) (string
 		return "", "", err
 	}
 
-	refreshToken, err := c.GetToken(ctx, usr.Id)
+	refreshToken, err := c.GenerateRefreshToken(ctx, usr.Id)
 	if err != nil {
 		return "", "", err
-	}
-
-	if refreshToken == "" {
-		refreshToken, err = c.GenerateAndSaveToken(ctx, usr.Id)
-		if err != nil {
-			return "", "", err
-		}
 	}
 
 	accessToken, err := c.r.Session.CreateToken(&entities.Session{
@@ -366,12 +335,14 @@ func (c *Usr) Auth(ctx context.Context, obj *entities.PhoneAndSmsCodeSt) (string
 
 // AuthByRefreshToken returns: accessToken, error
 func (c *Usr) AuthByRefreshToken(ctx context.Context, refreshToken string) (string, error) {
-	if refreshToken == "" {
+	ses := c.r.Session.GetFromToken(refreshToken)
+
+	if ses.Id == 0 {
 		return "", dopErrs.NotAuthorized
 	}
 
 	usr, err := c.Get(ctx, &entities.UsrGetParsSt{
-		Token:     &refreshToken,
+		Id:        &ses.Id,
 		WithRoles: true,
 		WithPerms: true,
 	}, false)
@@ -434,7 +405,7 @@ func (c *Usr) Reg(ctx context.Context, data *entities.UsrRegReqSt) (string, stri
 		return "", "", err
 	}
 
-	refreshToken, err := c.GenerateAndSaveToken(ctx, newUsr.Id)
+	refreshToken, err := c.GenerateRefreshToken(ctx, newUsr.Id)
 	if err != nil {
 		return "", "", err
 	}

@@ -24,7 +24,6 @@ type UsrSt struct {
 type UsrGetParsSt struct {
 	Id    *int64  `json:"id" form:"id"`
 	Phone *string `json:"phone" form:"phone"`
-	Token *string `json:"token" form:"token"`
 
 	WithRoles bool `json:"with_roles" form:"with_roles"`
 	WithPerms bool `json:"with_perms" form:"with_perms"`
