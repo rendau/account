@@ -90,26 +90,38 @@ func (o *St) hUsrUpdate(c *gin.Context) {
 	dopHttps.Error(c, o.ucs.UsrUpdate(o.getRequestContext(c), id, reqObj))
 }
 
-// @Router  /usr/:id/generate_and_save_access_token [put]
+// @Router  /usr/:id/new_access_token [put]
 // @Tags    usr
 // @Param   id   path string           true  "id"
 // @Produce json
-// @Success 200 {object} entities.AuthByTokenRepSt
+// @Success 200 {object} entities.GetNewTokenRepSt
 // @Failure 400 {object} dopTypes.ErrRep
-func (o *St) hUsrGenerateAndSaveAccessToken(c *gin.Context) {
+func (o *St) hUsrGetNewAccessToken(c *gin.Context) {
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
-	reqObj := &entities.UsrCUSt{}
-	if !dopHttps.BindJSON(c, reqObj) {
-		return
-	}
-
-	result, err := o.ucs.UsrGenerateAndSaveAccessToken(o.getRequestContext(c), id)
+	result, err := o.ucs.UsrGetNewAccessToken(o.getRequestContext(c), id)
 	if dopHttps.Error(c, err) {
 		return
 	}
 
-	c.JSON(http.StatusOK, entities.AuthByTokenRepSt{AccessToken: result})
+	c.JSON(http.StatusOK, entities.GetNewTokenRepSt{Token: result})
+}
+
+// @Router  /usr/:id/new_refresh_token [put]
+// @Tags    usr
+// @Param   id   path string           true  "id"
+// @Produce json
+// @Success 200 {object} entities.GetNewTokenRepSt
+// @Failure 400 {object} dopTypes.ErrRep
+func (o *St) hUsrGetNewRefreshToken(c *gin.Context) {
+	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
+
+	result, err := o.ucs.UsrGetNewRefreshToken(o.getRequestContext(c), id)
+	if dopHttps.Error(c, err) {
+		return
+	}
+
+	c.JSON(http.StatusOK, entities.GetNewTokenRepSt{Token: result})
 }
 
 // @Router  /usr/:id [delete]

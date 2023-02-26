@@ -51,15 +51,16 @@ create table role_perm
 
 create table usr
 (
-    id         bigserial   not null
+    id                        bigserial   not null
         primary key,
-    created_at timestamptz not null default now(),
-    active     bool        not null default true,
-    phone      text        not null
+    created_at                timestamptz not null default now(),
+    active                    bool        not null default true,
+    phone                     text        not null
         constraint usr_unique_phone unique,
-    ava        text        not null default '',
-    name       text        not null default '',
-    token      text        not null default ''
+    ava                       text        not null default '',
+    name                      text        not null default '',
+    access_token_dur_seconds  bigint      not null default 0,
+    refresh_token_dur_seconds bigint      not null default 0
 );
 create index usr_created_at_idx
     on usr (created_at);

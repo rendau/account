@@ -256,33 +256,49 @@ func (c *Usr) GenerateAccessToken(ctx context.Context, usr *entities.UsrSt) (str
 		return "", errs.RolesAndPermShouldBeLoaded
 	}
 
-	cfg, err := c.r.Config.Get(context.Background())
-	if err != nil {
-		return "", err
+	dur := usr.AccessTokenDurSeconds
+
+	if dur == 0 {
+		cfg, err := c.r.Config.Get(context.Background())
+		if err != nil {
+			return "", err
+		}
+
+		dur = cfg.AccessTokenDurSeconds
 	}
 
 	return c.r.Session.CreateToken(&entities.Session{
 		Id:    usr.Id,
 		Roles: usr.GetRoleCodes(),
 		Perms: usr.GetPermCodes(),
-	}, cfg.AccessTokenDurSeconds)
+	}, dur)
 }
 
 func (c *Usr) GenerateRefreshToken(ctx context.Context, usr *entities.UsrSt) (string, error) {
-	cfg, err := c.r.Config.Get(context.Background())
-	if err != nil {
-		return "", err
+	dur := usr.RefreshTokenDurSeconds
+
+	if dur == 0 {
+		cfg, err := c.r.Config.Get(context.Background())
+		if err != nil {
+			return "", err
+		}
+
+		dur = cfg.RefreshTokenDurSeconds
 	}
 
 	return c.r.jwts.Create(
 		strconv.FormatInt(usr.Id, 10),
-		cfg.RefreshTokenDurSeconds,
+		dur,
 		map[string]any{},
 	)
 }
 
-func (c *Usr) GenerateAndSaveAccessToken(ctx context.Context, id int64) (string, error) {
-	usr, err := c.Get(ctx, &entities.UsrGetParsSt{Id: &id}, true)
+func (c *Usr) GetNewAccessToken(ctx context.Context, id int64) (string, error) {
+	usr, err := c.Get(ctx, &entities.UsrGetParsSt{
+		Id:        &id,
+		WithRoles: true,
+		WithPerms: true,
+	}, true)
 	if err != nil {
 		return "", err
 	}
@@ -292,16 +308,21 @@ func (c *Usr) GenerateAndSaveAccessToken(ctx context.Context, id int64) (string,
 		return "", err
 	}
 
-	err = c.SetToken(ctx, id, accessToken)
+	return accessToken, nil
+}
+
+func (c *Usr) GetNewRefreshToken(ctx context.Context, id int64) (string, error) {
+	usr, err := c.Get(ctx, &entities.UsrGetParsSt{Id: &id}, true)
 	if err != nil {
 		return "", err
 	}
 
-	return accessToken, nil
-}
+	refreshToken, err := c.GenerateRefreshToken(ctx, usr)
+	if err != nil {
+		return "", err
+	}
 
-func (c *Usr) SetToken(ctx context.Context, id int64, v string) error {
-	return c.r.repo.UsrSetToken(ctx, id, v)
+	return refreshToken, nil
 }
 
 func (c *Usr) GetRoleIds(ctx context.Context, id int64) ([]int64, error) {

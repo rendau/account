@@ -219,10 +219,6 @@ func (d *St) UsrGetIdForPhone(ctx context.Context, phone string) (int64, error) 
 	return result, nil
 }
 
-func (d *St) UsrSetToken(ctx context.Context, id int64, token string) error {
-	return d.DbExec(ctx, `update usr set token = $2 where id = $1`, id, token)
-}
-
 func (d *St) UsrCreate(ctx context.Context, obj *entities.UsrCUSt) (int64, error) {
 	var result int64
 

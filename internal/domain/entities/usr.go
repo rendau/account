@@ -8,12 +8,13 @@ import (
 )
 
 type UsrSt struct {
-	Id        int64     `json:"id" db:"id"`
-	CreatedAt time.Time `json:"created_at" db:"created_at"`
-	Phone     string    `json:"phone" db:"phone"`
-	Ava       string    `json:"ava" db:"ava"`
-	Name      string    `json:"name" db:"name"`
-	Token     string    `json:"token" db:"token"`
+	Id                     int64     `json:"id" db:"id"`
+	CreatedAt              time.Time `json:"created_at" db:"created_at"`
+	Phone                  string    `json:"phone" db:"phone"`
+	Ava                    string    `json:"ava" db:"ava"`
+	Name                   string    `json:"name" db:"name"`
+	AccessTokenDurSeconds  int64     `json:"access_token_dur_seconds" db:"access_token_dur_seconds"`
+	RefreshTokenDurSeconds int64     `json:"refresh_token_dur_seconds" db:"refresh_token_dur_seconds"`
 
 	RoleIds []int64 `json:"role_ids" db:"role_ids"`
 	PermIds []int64 `json:"perm_ids" db:"perm_ids"`
@@ -54,9 +55,11 @@ type UsrListParsSt struct {
 }
 
 type UsrCUSt struct {
-	Phone *string `json:"phone" db:"phone"`
-	Name  *string `json:"name" db:"name"`
-	Ava   *string `json:"ava" db:"ava"`
+	Phone                  *string `json:"phone" db:"phone"`
+	Name                   *string `json:"name" db:"name"`
+	Ava                    *string `json:"ava" db:"ava"`
+	AccessTokenDurSeconds  *int64  `json:"access_token_dur_seconds" db:"access_token_dur_seconds"`
+	RefreshTokenDurSeconds *int64  `json:"refresh_token_dur_seconds" db:"refresh_token_dur_seconds"`
 
 	RoleIds []int64 `json:"role_ids"`
 }
@@ -89,6 +92,10 @@ type AuthByTokenReqSt struct {
 
 type AuthByTokenRepSt struct {
 	AccessToken string `json:"access_token"`
+}
+
+type GetNewTokenRepSt struct {
+	Token string `json:"token"`
 }
 
 func (u *UsrSt) GetRoleCodes() []string {

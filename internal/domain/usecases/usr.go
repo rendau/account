@@ -86,22 +86,27 @@ func (u *St) UsrUpdate(ctx context.Context,
 	}
 
 	// check if super admin role is not changed
-	if !u.SessionIsSAdmin(ses) && obj.RoleIds != nil {
-		usrIsSAdmin, err := u.cr.Usr.IsSAdmin(ctx, id)
-		if err != nil {
-			return err
-		}
+	if !u.SessionIsSAdmin(ses) {
+		obj.AccessTokenDurSeconds = nil
+		obj.RefreshTokenDurSeconds = nil
 
-		items, err := u.cr.Role.List(ctx, &entities.RoleListParsSt{
-			ListParams: dopTypes.ListParams{PageSize: 1},
-			Ids:        &obj.RoleIds,
-			Code:       dopTools.NewPtr(cns.RoleCodeSuperAdmin),
-		})
-		if err != nil {
-			return err
-		}
-		if len(items) > 0 != usrIsSAdmin {
-			return dopErrs.PermissionDenied
+		if obj.RoleIds != nil {
+			usrIsSAdmin, err := u.cr.Usr.IsSAdmin(ctx, id)
+			if err != nil {
+				return err
+			}
+
+			items, err := u.cr.Role.List(ctx, &entities.RoleListParsSt{
+				ListParams: dopTypes.ListParams{PageSize: 1},
+				Ids:        &obj.RoleIds,
+				Code:       dopTools.NewPtr(cns.RoleCodeSuperAdmin),
+			})
+			if err != nil {
+				return err
+			}
+			if len(items) > 0 != usrIsSAdmin {
+				return dopErrs.PermissionDenied
+			}
 		}
 	}
 
@@ -110,7 +115,7 @@ func (u *St) UsrUpdate(ctx context.Context,
 	})
 }
 
-func (u *St) UsrGenerateAndSaveAccessToken(ctx context.Context,
+func (u *St) UsrGetNewAccessToken(ctx context.Context,
 	id int64) (string, error) {
 	var err error
 
@@ -123,7 +128,27 @@ func (u *St) UsrGenerateAndSaveAccessToken(ctx context.Context,
 	var result string
 
 	err = u.db.TransactionFn(ctx, func(ctx context.Context) error {
-		result, err = u.cr.Usr.GenerateAndSaveAccessToken(ctx, id)
+		result, err = u.cr.Usr.GetNewAccessToken(ctx, id)
+		return err
+	})
+
+	return result, err
+}
+
+func (u *St) UsrGetNewRefreshToken(ctx context.Context,
+	id int64) (string, error) {
+	var err error
+
+	ses := u.SessionGetFromContext(ctx)
+
+	if err = u.SessionRequireSAdmin(ses); err != nil {
+		return "", err
+	}
+
+	var result string
+
+	err = u.db.TransactionFn(ctx, func(ctx context.Context) error {
+		result, err = u.cr.Usr.GetNewRefreshToken(ctx, id)
 		return err
 	})
 
