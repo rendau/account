@@ -23,14 +23,6 @@ type AppCUSt struct {
 	PermUrl *string `json:"perm_url" db:"perm_url"`
 }
 
-// fetch permissions for app
-
-type AppFetchPermsRepSt struct {
-	Perms []*AppFetchPermsItemSt `json:"perms"`
-}
-
-type AppFetchPermsItemSt struct {
-	Code  string `json:"code"`
-	IsAll bool   `json:"is_all"`
-	Dsc   string `json:"dsc"`
+type AppFetchPermsReqSt struct {
+	Uri string `json:"uri"`
 }

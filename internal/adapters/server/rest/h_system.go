@@ -27,3 +27,7 @@ func (o *St) hSystemCronTick15m(c *gin.Context) {
 func (o *St) hSystemCronTick30m(c *gin.Context) {
 	o.ucs.SystemCronTick30m()
 }
+
+func (o *St) hSystemGetPerms(c *gin.Context) {
+	c.JSON(http.StatusOK, o.ucs.GetPerms())
+}

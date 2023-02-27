@@ -100,19 +100,33 @@ func (o *St) hAppDelete(c *gin.Context) {
 	dopHttps.Error(c, o.ucs.AppDelete(o.getRequestContext(c), id))
 }
 
-// @Router  /app/:id/check_perms [get]
+// @Router  /app/fetch_perms [post]
 // @Tags    app
-// @Param   id path integer true "id"
+// @Param   body body entities.AppFetchPermsReqSt false "body"
 // @Produce json
-// @Success 200 {object} entities.AppFetchPermsRepSt
+// @Success 200 {object} entities.SystemGetPermsRepSt
 // @Failure 400 {object} dopTypes.ErrRep
-func (o *St) hAppCheckPerms(c *gin.Context) {
-	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
+func (o *St) hAppFetchPerms(c *gin.Context) {
+	reqObj := &entities.AppFetchPermsReqSt{}
+	if !dopHttps.BindJSON(c, reqObj) {
+		return
+	}
 
-	result, err := o.ucs.AppCheckPerms(o.getRequestContext(c), id)
+	result, err := o.ucs.AppFetchPerms(o.getRequestContext(c), reqObj.Uri)
 	if dopHttps.Error(c, err) {
 		return
 	}
 
 	c.JSON(http.StatusOK, result)
+}
+
+// @Router  /app/:id/sync_perms [put]
+// @Tags    app
+// @Param   id path integer true "id"
+// @Success 200
+// @Failure 400 {object} dopTypes.ErrRep
+func (o *St) hAppSyncPerms(c *gin.Context) {
+	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
+
+	dopHttps.Error(c, o.ucs.AppSyncPerms(o.getRequestContext(c), id))
 }

@@ -48,6 +48,7 @@ func GetHandler(lg logger.Lite, ucs *usecases.St, withCors bool) http.Handler {
 	r.GET("/mss/cron/tick5m", s.hSystemCronTick5m)
 	r.GET("/mss/cron/tick15m", s.hSystemCronTick15m)
 	r.GET("/mss/cron/tick30m", s.hSystemCronTick30m)
+	r.GET("/mss/perms", s.hSystemGetPerms)
 
 	// dic
 	r.GET("/dic", s.hDicGet)
@@ -95,7 +96,8 @@ func GetHandler(lg logger.Lite, ucs *usecases.St, withCors bool) http.Handler {
 	r.GET("/app/:id", s.hAppGet)
 	r.PUT("/app/:id", s.hAppUpdate)
 	r.DELETE("/app/:id", s.hAppDelete)
-	r.GET("/app/:id/check_perms", s.hAppCheckPerms)
+	r.POST("/app/fetch_perms", s.hAppFetchPerms)
+	r.PUT("/app/:id/sync_perms", s.hAppSyncPerms)
 
 	return r
 }

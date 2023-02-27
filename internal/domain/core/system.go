@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/rendau/account/internal/cns"
+	"github.com/rendau/account/internal/domain/entities"
 )
 
 type System struct {
@@ -67,4 +68,16 @@ func (c *System) CronTick15m() {
 
 func (c *System) CronTick30m() {
 	// do something in goroutine
+}
+
+func (c *System) GetPerms() *entities.SystemGetPermsRepSt {
+	return &entities.SystemGetPermsRepSt{
+		Perms: []*entities.SystemGetPermsItemSt{
+			{Code: cns.PermAll, IsAll: true, Dsc: "All permissions"},
+			{Code: cns.PermMApp, IsAll: false, Dsc: "Modify applications"},
+			{Code: cns.PermMPerm, IsAll: false, Dsc: "Modify permissions"},
+			{Code: cns.PermMRole, IsAll: false, Dsc: "Modify roles"},
+			{Code: cns.PermMUsr, IsAll: false, Dsc: "Modify users"},
+		},
+	}
 }

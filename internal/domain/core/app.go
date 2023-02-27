@@ -70,7 +70,7 @@ func (c *App) Create(ctx context.Context, obj *entities.AppCUSt) (int64, error) 
 		return 0, err
 	}
 
-	err = c.syncPerms(ctx, result)
+	err = c.SyncPerms(ctx, result)
 	if err != nil {
 		return 0, err
 	}
@@ -100,7 +100,7 @@ func (c *App) Update(ctx context.Context, id int64, obj *entities.AppCUSt) error
 		return err
 	}
 
-	err = c.syncPerms(ctx, id)
+	err = c.SyncPerms(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -121,16 +121,11 @@ func (c *App) Delete(ctx context.Context, id int64) error {
 	return c.r.repo.AppDelete(ctx, id)
 }
 
-func (c *App) CheckPerms(ctx context.Context, id int64) (*entities.AppFetchPermsRepSt, error) {
-	app, err := c.Get(ctx, id, true)
-	if err != nil {
-		return nil, err
-	}
-
-	return c.fetchPerms(app.PermUrl)
+func (c *App) FetchPerms(ctx context.Context, uri string) (*entities.SystemGetPermsRepSt, error) {
+	return c.fetchPerms(uri)
 }
 
-func (c *App) syncPerms(ctx context.Context, id int64) error {
+func (c *App) SyncPerms(ctx context.Context, id int64) error {
 	app, err := c.Get(ctx, id, true)
 	if err != nil {
 		return err
@@ -228,7 +223,7 @@ func (c *App) syncPerms(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (c *App) fetchPerms(permUrl string) (*entities.AppFetchPermsRepSt, error) {
+func (c *App) fetchPerms(permUrl string) (*entities.SystemGetPermsRepSt, error) {
 	const fetchTimeout = 5 * time.Second
 
 	var err error
@@ -237,7 +232,7 @@ func (c *App) fetchPerms(permUrl string) (*entities.AppFetchPermsRepSt, error) {
 		return nil, errs.AppHasNotPermsUrl
 	}
 
-	result := &entities.AppFetchPermsRepSt{}
+	result := &entities.SystemGetPermsRepSt{}
 
 	httpClient := httpclient.New(c.r.lg, &httpc.OptionsSt{
 		Client: &http.Client{
@@ -247,8 +242,9 @@ func (c *App) fetchPerms(permUrl string) (*entities.AppFetchPermsRepSt, error) {
 	})
 
 	_, err = httpClient.Send(&httpc.OptionsSt{
-		Method: "GET",
-		Uri:    permUrl,
+		Method:   "GET",
+		Uri:      permUrl,
+		LogFlags: httpc.NoLogError,
 
 		RepObj: result,
 	})
@@ -257,8 +253,17 @@ func (c *App) fetchPerms(permUrl string) (*entities.AppFetchPermsRepSt, error) {
 	}
 
 	if result.Perms == nil {
-		result.Perms = []*entities.AppFetchPermsItemSt{}
+		result.Perms = []*entities.SystemGetPermsItemSt{}
 	}
+
+	// filter
+	filteredItems := make([]*entities.SystemGetPermsItemSt, 0, len(result.Perms))
+	for _, item := range result.Perms {
+		if item.Code != "" {
+			filteredItems = append(filteredItems, item)
+		}
+	}
+	result.Perms = filteredItems
 
 	return result, nil
 }
