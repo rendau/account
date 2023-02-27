@@ -99,3 +99,20 @@ func (o *St) hAppDelete(c *gin.Context) {
 
 	dopHttps.Error(c, o.ucs.AppDelete(o.getRequestContext(c), id))
 }
+
+// @Router  /app/:id/check_perms [get]
+// @Tags    app
+// @Param   id path integer true "id"
+// @Produce json
+// @Success 200 {object} entities.AppFetchPermsRepSt
+// @Failure 400 {object} dopTypes.ErrRep
+func (o *St) hAppCheckPerms(c *gin.Context) {
+	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
+
+	result, err := o.ucs.AppCheckPerms(o.getRequestContext(c), id)
+	if dopHttps.Error(c, err) {
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}

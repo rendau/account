@@ -21,14 +21,15 @@ create table app
 
 create table perm
 (
-    id        bigserial not null
+    id         bigserial not null
         primary key,
-    code      text      not null default '',
-    is_all    bool      not null default false,
-    app_id    bigint    not null
+    code       text      not null default '',
+    is_all     bool      not null default false,
+    app_id     bigint    not null
         constraint perm_fk_app_id references app (id) on update cascade on delete cascade,
-    dsc       text      not null default '',
-    is_system bool      not null default false
+    dsc        text      not null default '',
+    is_system  bool      not null default false,
+    is_fetched bool      not null default false
 );
 
 create table role

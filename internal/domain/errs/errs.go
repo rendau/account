@@ -23,4 +23,5 @@ const (
 	WrongSmsCode               = dopErrs.Err("wrong_sms_code")
 	NameRequired               = dopErrs.Err("name_required")
 	BadName                    = dopErrs.Err("bad_name")
+	AppHasNotPermsUrl          = dopErrs.Err("app_has_not_perms_url")
 )

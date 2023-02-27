@@ -2,8 +2,15 @@ package core
 
 import (
 	"context"
+	"crypto/tls"
+	"net/http"
+	"time"
 
+	"github.com/rendau/account/internal/cns"
 	"github.com/rendau/account/internal/domain/entities"
+	"github.com/rendau/account/internal/domain/errs"
+	"github.com/rendau/dop/adapters/client/httpc"
+	"github.com/rendau/dop/adapters/client/httpc/httpclient"
 	"github.com/rendau/dop/dopErrs"
 )
 
@@ -63,6 +70,11 @@ func (c *App) Create(ctx context.Context, obj *entities.AppCUSt) (int64, error) 
 		return 0, err
 	}
 
+	err = c.syncPerms(ctx, result)
+	if err != nil {
+		return 0, err
+	}
+
 	return result, nil
 }
 
@@ -88,6 +100,11 @@ func (c *App) Update(ctx context.Context, id int64, obj *entities.AppCUSt) error
 		return err
 	}
 
+	err = c.syncPerms(ctx, id)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -102,4 +119,146 @@ func (c *App) Delete(ctx context.Context, id int64) error {
 	}
 
 	return c.r.repo.AppDelete(ctx, id)
+}
+
+func (c *App) CheckPerms(ctx context.Context, id int64) (*entities.AppFetchPermsRepSt, error) {
+	app, err := c.Get(ctx, id, true)
+	if err != nil {
+		return nil, err
+	}
+
+	return c.fetchPerms(app.PermUrl)
+}
+
+func (c *App) syncPerms(ctx context.Context, id int64) error {
+	app, err := c.Get(ctx, id, true)
+	if err != nil {
+		return err
+	}
+
+	dbPerms, err := c.r.Perm.List(ctx, &entities.PermListParsSt{
+		AppId:     &id,
+		IsFetched: &cns.True,
+	})
+	if err != nil {
+		return err
+	}
+
+	if app.PermUrl == "" {
+		if len(dbPerms) > 0 {
+			// delete
+			for _, dbPerm := range dbPerms {
+				err = c.r.Perm.Delete(ctx, dbPerm.Id)
+				if err != nil {
+					return err
+				}
+			}
+		}
+
+		return nil
+	}
+
+	respObj, err := c.fetchPerms(app.PermUrl)
+	if err != nil {
+		return err
+	}
+
+	var found bool
+
+	for _, dbPerm := range dbPerms {
+		found = false
+
+		for _, freshPerm := range respObj.Perms {
+			if freshPerm.Code == dbPerm.Code {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			// delete
+			err = c.r.Perm.Delete(ctx, dbPerm.Id)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	for _, freshPerm := range respObj.Perms {
+		if freshPerm.Code == "" {
+			continue
+		}
+
+		found = false
+
+		for _, dbPerm := range dbPerms {
+			if freshPerm.Code == dbPerm.Code {
+				found = true
+
+				if freshPerm.IsAll != dbPerm.IsAll || freshPerm.Dsc != dbPerm.Dsc {
+					// update
+					err = c.r.Perm.Update(ctx, dbPerm.Id, &entities.PermCUSt{
+						IsAll: &freshPerm.IsAll,
+						Dsc:   &freshPerm.Dsc,
+					})
+					if err != nil {
+						return err
+					}
+				}
+
+				break
+			}
+		}
+
+		if !found {
+			// create
+			_, err = c.r.Perm.Create(ctx, &entities.PermCUSt{
+				AppId:     &id,
+				Code:      &freshPerm.Code,
+				IsAll:     &freshPerm.IsAll,
+				Dsc:       &freshPerm.Dsc,
+				IsFetched: &cns.True,
+			})
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (c *App) fetchPerms(permUrl string) (*entities.AppFetchPermsRepSt, error) {
+	const fetchTimeout = 5 * time.Second
+
+	var err error
+
+	if permUrl == "" {
+		return nil, errs.AppHasNotPermsUrl
+	}
+
+	result := &entities.AppFetchPermsRepSt{}
+
+	httpClient := httpclient.New(c.r.lg, &httpc.OptionsSt{
+		Client: &http.Client{
+			Timeout:   fetchTimeout,
+			Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}},
+		},
+	})
+
+	_, err = httpClient.Send(&httpc.OptionsSt{
+		Method: "GET",
+		Uri:    permUrl,
+
+		RepObj: result,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if result.Perms == nil {
+		result.Perms = []*entities.AppFetchPermsItemSt{}
+	}
+
+	return result, nil
 }

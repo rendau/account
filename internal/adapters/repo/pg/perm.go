@@ -47,9 +47,16 @@ func (d *St) PermList(ctx context.Context, pars *entities.PermListParsSt) ([]*en
 	}
 	if pars.IsSystem != nil {
 		if *pars.IsSystem {
-			conds = append(conds, `is_system is true`)
+			conds = append(conds, `is_system`)
 		} else {
-			conds = append(conds, `is_system is false`)
+			conds = append(conds, `not is_system`)
+		}
+	}
+	if pars.IsFetched != nil {
+		if *pars.IsFetched {
+			conds = append(conds, `is_fetched`)
+		} else {
+			conds = append(conds, `not is_fetched`)
 		}
 	}
 

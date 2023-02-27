@@ -77,10 +77,8 @@ func Execute() {
 		app.jwts = dopJwts.New(
 			httpclient.New(app.lg, &httpc.OptionsSt{
 				Client: &http.Client{
-					Timeout: 10 * time.Second,
-					Transport: &http.Transport{
-						TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-					},
+					Timeout:   10 * time.Second,
+					Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}},
 				},
 				Uri:       conf.MsJwtsUrl,
 				LogPrefix: "JWT: ",

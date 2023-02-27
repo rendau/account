@@ -95,6 +95,7 @@ func GetHandler(lg logger.Lite, ucs *usecases.St, withCors bool) http.Handler {
 	r.GET("/app/:id", s.hAppGet)
 	r.PUT("/app/:id", s.hAppUpdate)
 	r.DELETE("/app/:id", s.hAppDelete)
+	r.GET("/app/:id/check_perms", s.hAppCheckPerms)
 
 	return r
 }

@@ -81,3 +81,15 @@ func (u *St) AppDelete(ctx context.Context,
 		return u.cr.App.Delete(ctx, id)
 	})
 }
+
+func (u *St) AppCheckPerms(ctx context.Context, id int64) (*entities.AppFetchPermsRepSt, error) {
+	var err error
+
+	ses := u.SessionGetFromContext(ctx)
+
+	if err = u.SessionRequirePerm(ses, false, cns.PermMApp); err != nil {
+		return nil, err
+	}
+
+	return u.cr.App.CheckPerms(ctx, id)
+}
