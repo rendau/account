@@ -29,3 +29,4 @@ migrate create -ext sql -dir migrations mg_name
 ```
 migrate -path migrations -database "postgres://localhost:5432/db_name?sslmode=disable" up
 ```
+
