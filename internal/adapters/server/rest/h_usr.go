@@ -90,7 +90,7 @@ func (o *St) hUsrUpdate(c *gin.Context) {
 	dopHttps.Error(c, o.ucs.UsrUpdate(o.getRequestContext(c), id, reqObj))
 }
 
-// @Router  /usr/:id/new_access_token [put]
+// @Router  /usr/:id/new_access_token [get]
 // @Tags    usr
 // @Param   id   path string           true  "id"
 // @Produce json
@@ -107,7 +107,7 @@ func (o *St) hUsrGetNewAccessToken(c *gin.Context) {
 	c.JSON(http.StatusOK, entities.GetNewTokenRepSt{Token: result})
 }
 
-// @Router  /usr/:id/new_refresh_token [put]
+// @Router  /usr/:id/new_refresh_token [get]
 // @Tags    usr
 // @Param   id   path string           true  "id"
 // @Produce json
