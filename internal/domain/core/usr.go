@@ -258,7 +258,10 @@ func (c *Usr) GenerateAccessToken(ctx context.Context, usr *entities.UsrSt) (str
 
 	dur := usr.AccessTokenDurSeconds
 
-	if dur == 0 {
+	switch dur {
+	case -1:
+		dur = 0
+	case 0:
 		cfg, err := c.r.Config.Get(context.Background())
 		if err != nil {
 			return "", err
@@ -277,7 +280,10 @@ func (c *Usr) GenerateAccessToken(ctx context.Context, usr *entities.UsrSt) (str
 func (c *Usr) GenerateRefreshToken(ctx context.Context, usr *entities.UsrSt) (string, error) {
 	dur := usr.RefreshTokenDurSeconds
 
-	if dur == 0 {
+	switch dur {
+	case -1:
+		dur = 0
+	case 0:
 		cfg, err := c.r.Config.Get(context.Background())
 		if err != nil {
 			return "", err
