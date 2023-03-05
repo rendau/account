@@ -154,8 +154,8 @@ func (c *App) SyncPerms(ctx context.Context, id int64) error {
 	}
 
 	respObj, err := c.fetchPerms(app.PermUrl)
-	if err != nil {
-		return err
+	if err != nil { // skip error
+		return nil
 	}
 
 	var found bool
