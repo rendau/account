@@ -39,7 +39,7 @@ var (
 	admId    int64
 	admName  = "Admin"
 	admPhone = "70000000001"
-	admRoles = []string{cns.RoleAdmin}
+	admRoles = []string{cns.RoleCodeAdmin}
 
 	usr1Id    int64
 	usr1Name  = "Usr1"
