@@ -6,12 +6,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/rendau/account/docs"
-	"github.com/rendau/account/internal/adapters/repo"
-	"github.com/rendau/account/internal/adapters/repo/pg"
-	"github.com/rendau/account/internal/adapters/server/rest"
-	"github.com/rendau/account/internal/domain/core"
-	"github.com/rendau/account/internal/domain/usecases"
 	dopCache "github.com/rendau/dop/adapters/cache"
 	dopCacheMem "github.com/rendau/dop/adapters/cache/mem"
 	dopCacheRedis "github.com/rendau/dop/adapters/cache/redis"
@@ -27,6 +21,15 @@ import (
 	dopSmsMock "github.com/rendau/dop/adapters/sms/mock"
 	dopSmss "github.com/rendau/dop/adapters/sms/smss"
 	"github.com/rendau/dop/dopTools"
+
+	"github.com/rendau/account/docs"
+	jwtRepoP "github.com/rendau/account/internal/adapters/jwt/repo"
+	jwtServiceP "github.com/rendau/account/internal/adapters/jwt/service"
+	"github.com/rendau/account/internal/adapters/repo"
+	"github.com/rendau/account/internal/adapters/repo/pg"
+	"github.com/rendau/account/internal/adapters/server/rest"
+	"github.com/rendau/account/internal/domain/core"
+	"github.com/rendau/account/internal/domain/usecases"
 )
 
 func Execute() {
@@ -103,12 +106,18 @@ func Execute() {
 		)
 	}
 
+	jwtRepo, err := jwtRepoP.New(conf.JwtsGrpcUrl)
+	if err != nil {
+		app.lg.Fatal(err)
+	}
+	jwts := jwtServiceP.New(jwtRepo)
+
 	app.core = core.New(
 		app.lg,
 		app.cache,
 		app.db,
 		app.repo,
-		app.jwts,
+		jwts,
 		app.sms,
 		conf.NoSmsCheck,
 		false,

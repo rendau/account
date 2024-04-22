@@ -18,6 +18,7 @@ var conf = struct {
 	RedisPsw       string `mapstructure:"REDIS_PSW"`
 	RedisDb        int    `mapstructure:"REDIS_DB"`
 	RedisKeyPrefix string `mapstructure:"REDIS_KEY_PREFIX"`
+	JwtsGrpcUrl    string `mapstructure:"JWTS_GRPC_URL"`
 	MsJwtsUrl      string `mapstructure:"MS_JWTS_URL"`
 	MsSmsUrl       string `mapstructure:"MS_SMS_URL"`
 	NoSmsCheck     bool   `mapstructure:"NO_SMS_CHECK"`

@@ -1,22 +1,28 @@
 package core
 
 import (
+	"context"
 	"sync"
+	"time"
 
-	"github.com/rendau/account/internal/adapters/repo"
 	"github.com/rendau/dop/adapters/cache"
 	"github.com/rendau/dop/adapters/db"
-	"github.com/rendau/dop/adapters/jwt"
 	"github.com/rendau/dop/adapters/logger"
 	"github.com/rendau/dop/adapters/sms"
+
+	"github.com/rendau/account/internal/adapters/repo"
 )
+
+type JwtI interface {
+	Create(ctx context.Context, sub string, ttl time.Duration, payload any) (string, error)
+}
 
 type St struct {
 	lg         logger.Lite
 	cache      cache.Cache
 	db         db.RDBContextTransaction
 	repo       repo.Repo
-	jwts       jwt.Jwt
+	jwts       JwtI
 	sms        sms.Sms
 	noSmsCheck bool
 	testing    bool
@@ -39,7 +45,7 @@ func New(
 	cache cache.Cache,
 	db db.RDBContextTransaction,
 	repo repo.Repo,
-	jwts jwt.Jwt,
+	jwts JwtI,
 	sms sms.Sms,
 	noSmsCheck bool,
 	testing bool,

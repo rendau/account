@@ -3,9 +3,11 @@ package core
 import (
 	"context"
 	"strconv"
+	"time"
+
+	"github.com/rendau/dop/adapters/jwt"
 
 	"github.com/rendau/account/internal/domain/entities"
-	"github.com/rendau/dop/adapters/jwt"
 )
 
 const sessionContextKey = "user_session"
@@ -69,11 +71,12 @@ func (c *Session) GetFromContext(ctx context.Context) *entities.Session {
 	}
 }
 
-func (c *Session) CreateToken(ses *entities.Session, durSeconds int64) (string, error) {
+func (c *Session) CreateToken(ses *entities.Session, dur time.Duration) (string, error) {
 
 	token, _ := c.r.jwts.Create(
+		context.Background(),
 		strconv.FormatInt(ses.Id, 10),
-		durSeconds,
+		dur,
 		map[string]any{
 			"roles": ses.Roles,
 			"perms": ses.Perms,

@@ -7,12 +7,13 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/rendau/account/internal/cns"
-	"github.com/rendau/account/internal/domain/entities"
-	"github.com/rendau/account/internal/domain/errs"
 	"github.com/rendau/dop/dopErrs"
 	"github.com/rendau/dop/dopTools"
 	"github.com/rendau/dop/dopTypes"
+
+	"github.com/rendau/account/internal/cns"
+	"github.com/rendau/account/internal/domain/entities"
+	"github.com/rendau/account/internal/domain/errs"
 )
 
 const (
@@ -256,45 +257,46 @@ func (c *Usr) GenerateAccessToken(ctx context.Context, usr *entities.UsrSt) (str
 		return "", errs.RolesAndPermShouldBeLoaded
 	}
 
-	dur := usr.AccessTokenDurSeconds
+	durSeconds := usr.AccessTokenDurSeconds
 
-	switch dur {
+	switch durSeconds {
 	case -1:
-		dur = 0
+		durSeconds = 0
 	case 0:
 		cfg, err := c.r.Config.Get(context.Background())
 		if err != nil {
 			return "", err
 		}
 
-		dur = cfg.AccessTokenDurSeconds
+		durSeconds = cfg.AccessTokenDurSeconds
 	}
 
 	return c.r.Session.CreateToken(&entities.Session{
 		Id:    usr.Id,
 		Roles: usr.GetRoleCodes(),
 		Perms: usr.GetPermCodes(),
-	}, dur)
+	}, time.Duration(durSeconds)*time.Second)
 }
 
 func (c *Usr) GenerateRefreshToken(ctx context.Context, usr *entities.UsrSt) (string, error) {
-	dur := usr.RefreshTokenDurSeconds
+	durSeconds := usr.RefreshTokenDurSeconds
 
-	switch dur {
+	switch durSeconds {
 	case -1:
-		dur = 0
+		durSeconds = 0
 	case 0:
 		cfg, err := c.r.Config.Get(context.Background())
 		if err != nil {
 			return "", err
 		}
 
-		dur = cfg.RefreshTokenDurSeconds
+		durSeconds = cfg.RefreshTokenDurSeconds
 	}
 
 	return c.r.jwts.Create(
+		ctx,
 		strconv.FormatInt(usr.Id, 10),
-		dur,
+		time.Duration(durSeconds)*time.Second,
 		map[string]any{},
 	)
 }

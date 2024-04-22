@@ -15,3 +15,10 @@ build:
 
 clean:
 	rm -rf $(BUILD_PATH)
+
+jwts_proto:
+	mkdir -p pkg/proto
+	protoc -I vendor-proto \
+	--go_out pkg/proto --go_opt paths=source_relative \
+	--go-grpc_out pkg/proto --go-grpc_opt paths=source_relative \
+	vendor-proto/jwts_v1/*.proto
