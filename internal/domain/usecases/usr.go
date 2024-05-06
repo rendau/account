@@ -3,11 +3,12 @@ package usecases
 import (
 	"context"
 
-	"github.com/rendau/account/internal/cns"
-	"github.com/rendau/account/internal/domain/entities"
 	"github.com/rendau/dop/dopErrs"
 	"github.com/rendau/dop/dopTools"
 	"github.com/rendau/dop/dopTypes"
+
+	"github.com/rendau/account/internal/cns"
+	"github.com/rendau/account/internal/domain/entities"
 )
 
 func (u *St) UsrList(ctx context.Context,
@@ -20,8 +21,10 @@ func (u *St) UsrList(ctx context.Context,
 	// 	return nil, 0, err
 	// }
 
-	if err = dopTools.RequirePageSize(pars.ListParams, cns.MaxPageSize); err != nil {
-		return nil, 0, err
+	if pars.Id == nil && pars.Ids == nil && pars.RoleCode == nil {
+		if err = dopTools.RequirePageSize(pars.ListParams, cns.MaxPageSize); err != nil {
+			return nil, 0, err
+		}
 	}
 
 	return u.cr.Usr.List(ctx, pars)
