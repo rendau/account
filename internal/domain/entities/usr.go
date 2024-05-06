@@ -3,8 +3,9 @@ package entities
 import (
 	"time"
 
-	"github.com/rendau/account/internal/cns"
 	"github.com/rendau/dop/dopTypes"
+
+	"github.com/rendau/account/internal/cns"
 )
 
 type UsrSt struct {
@@ -49,9 +50,10 @@ type UsrListSt struct {
 type UsrListParsSt struct {
 	dopTypes.ListParams
 
-	Id     *int64   `json:"id" form:"id"`
-	Ids    *[]int64 `json:"ids" form:"ids"`
-	Search *string  `json:"search" form:"search"`
+	Id       *int64   `json:"id" form:"id"`
+	Ids      *[]int64 `json:"ids" form:"ids"`
+	RoleCode *string  `json:"role_code" form:"role_code"`
+	Search   *string  `json:"search" form:"search"`
 }
 
 type UsrCUSt struct {

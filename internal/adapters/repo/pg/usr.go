@@ -6,10 +6,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/rendau/account/internal/cns"
-	"github.com/rendau/account/internal/domain/entities"
 	"github.com/rendau/dop/adapters/db"
 	"github.com/rendau/dop/dopErrs"
+
+	"github.com/rendau/account/internal/cns"
+	"github.com/rendau/account/internal/domain/entities"
 )
 
 func (d *St) UsrList(ctx context.Context, pars *entities.UsrListParsSt) ([]*entities.UsrListSt, int64, error) {
@@ -24,6 +25,14 @@ func (d *St) UsrList(ctx context.Context, pars *entities.UsrListParsSt) ([]*enti
 	if pars.Ids != nil {
 		conds = append(conds, `id in (select * from unnest(${ids} :: bigint[]))`)
 		args["ids"] = *pars.Ids
+	}
+	if pars.RoleCode != nil {
+		conds = append(conds, `id in (
+			select usr_id
+			from usr_role ur
+				join role r on r.id = ur.role_id and r.code = ${role_code}
+		)`)
+		args["role_code"] = *pars.RoleCode
 	}
 	if pars.Search != nil && *pars.Search != "" {
 		for wordI, word := range strings.Split(*pars.Search, " ") {
