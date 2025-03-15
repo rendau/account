@@ -5,11 +5,12 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rendau/account/internal/domain/usecases"
 	"github.com/rendau/dop/adapters/logger"
 	dopHttps "github.com/rendau/dop/adapters/server/https"
 	swagFiles "github.com/swaggo/files"
 	ginSwag "github.com/swaggo/gin-swagger"
+
+	"github.com/rendau/account/internal/domain/usecases"
 )
 
 type St struct {
@@ -25,6 +26,8 @@ func GetHandler(lg logger.Lite, ucs *usecases.St, withCors bool) http.Handler {
 	// middlewares
 
 	r.Use(dopHttps.MwRecovery(lg, nil))
+
+	r.Use(mwLog(lg))
 
 	if withCors {
 		r.Use(dopHttps.MwCors())
@@ -106,4 +109,12 @@ func (o *St) getRequestContext(c *gin.Context) context.Context {
 	token := dopHttps.GetAuthToken(c)
 
 	return o.ucs.SessionSetToContextByToken(nil, token)
+}
+
+func mwLog(lg logger.Lite) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("Authorization")
+		lg.Infow("request "+c.Request.Method+" "+c.Request.URL.Path, "auth_header", authHeader)
+		c.Next()
+	}
 }
