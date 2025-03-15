@@ -3,7 +3,6 @@ package rest
 import (
 	"context"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rendau/dop/adapters/logger"
@@ -27,8 +26,6 @@ func GetHandler(lg logger.Lite, ucs *usecases.St, withCors bool) http.Handler {
 	// middlewares
 
 	r.Use(dopHttps.MwRecovery(lg, nil))
-
-	r.Use(mwLog(lg))
 
 	if withCors {
 		r.Use(dopHttps.MwCors())
@@ -110,12 +107,4 @@ func (o *St) getRequestContext(c *gin.Context) context.Context {
 	token := dopHttps.GetAuthToken(c)
 
 	return o.ucs.SessionSetToContextByToken(nil, token)
-}
-
-func mwLog(lg logger.Lite) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		authHeader := c.GetHeader("Authorization")
-		c.Next()
-		lg.Infow("request "+c.Request.Method+" "+c.Request.URL.Path+" - "+strconv.Itoa(c.Writer.Status()), "auth_header", authHeader)
-	}
 }
