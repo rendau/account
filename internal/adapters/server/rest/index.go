@@ -3,6 +3,7 @@ package rest
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rendau/dop/adapters/logger"
@@ -114,7 +115,7 @@ func (o *St) getRequestContext(c *gin.Context) context.Context {
 func mwLog(lg logger.Lite) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
-		lg.Infow("request "+c.Request.Method+" "+c.Request.URL.Path, "auth_header", authHeader)
 		c.Next()
+		lg.Infow("request "+c.Request.Method+" "+c.Request.URL.Path+" - "+strconv.Itoa(c.Writer.Status()), "auth_header", authHeader)
 	}
 }
