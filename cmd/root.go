@@ -64,7 +64,8 @@ func Execute() {
 	}
 
 	app.db, err = dopDbPg.New(conf.Debug, app.lg, dopDbPg.OptionsSt{
-		Dsn: conf.PgDsn,
+		Dsn:      conf.PgDsn,
+		MaxConns: 30,
 	})
 	if err != nil {
 		app.lg.Fatal(err)
