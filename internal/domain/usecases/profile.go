@@ -3,13 +3,14 @@ package usecases
 import (
 	"context"
 
-	"github.com/rendau/account/internal/domain/entities"
 	"github.com/rendau/dop/dopErrs"
+
+	"github.com/rendau/account/internal/domain/entities"
 )
 
 func (u *St) ProfileSendPhoneValidatingCode(ctx context.Context,
 	phone string, errNE bool) error {
-	return u.cr.Usr.SendPhoneValidatingCode(ctx, phone, errNE)
+	return u.cr.Usr.SendPhoneValidatingCode(ctx, phone, true)
 }
 
 func (u *St) ProfileAuth(ctx context.Context,
