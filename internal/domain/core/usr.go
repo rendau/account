@@ -100,7 +100,7 @@ func (c *Usr) SendPhoneValidatingCode(ctx context.Context, phone string, errNE b
 	rand.Seed(time.Now().UTC().UnixNano())
 	smsCode := 1000 + rand.Intn(9000)
 
-	smsText := fmt.Sprintf("%d - Используйте данный код для %s", smsCode, cns.AppName)
+	smsText := fmt.Sprintf("%d — код для %s", smsCode, cns.AppName)
 
 	ok := c.r.sms.Send(phone, smsText)
 	if !ok {

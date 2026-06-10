@@ -14,6 +14,7 @@ require (
 	golang.org/x/net v0.24.0
 	google.golang.org/grpc v1.50.1
 	google.golang.org/protobuf v1.34.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -82,5 +83,4 @@ require (
 	google.golang.org/genproto v0.0.0-20221024183307-1bc688fe9f3e // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

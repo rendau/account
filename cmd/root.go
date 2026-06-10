@@ -19,7 +19,6 @@ import (
 	dopServerHttps "github.com/rendau/dop/adapters/server/https"
 	dopSms "github.com/rendau/dop/adapters/sms"
 	dopSmsMock "github.com/rendau/dop/adapters/sms/mock"
-	dopSmss "github.com/rendau/dop/adapters/sms/smss"
 	"github.com/rendau/dop/dopTools"
 
 	"github.com/rendau/account/docs"
@@ -28,6 +27,7 @@ import (
 	"github.com/rendau/account/internal/adapters/repo"
 	"github.com/rendau/account/internal/adapters/repo/pg"
 	"github.com/rendau/account/internal/adapters/server/rest"
+	smsNotifire "github.com/rendau/account/internal/adapters/sms/notifire"
 	"github.com/rendau/account/internal/domain/core"
 	"github.com/rendau/account/internal/domain/usecases"
 )
@@ -93,7 +93,12 @@ func Execute() {
 	if conf.MsSmsUrl == "" {
 		app.sms = dopSmsMock.New(app.lg, false)
 	} else {
-		app.sms = dopSmss.New(
+		smsRoutes, err := smsNotifire.ParseRoutes(conf.SmsRoutes)
+		if err != nil {
+			app.lg.Fatal(err)
+		}
+
+		app.sms = smsNotifire.New(
 			httpclient.New(app.lg, &httpc.OptionsSt{
 				Client: &http.Client{
 					Timeout: 10 * time.Second,
@@ -104,6 +109,8 @@ func Execute() {
 				Uri:       conf.MsSmsUrl,
 				LogPrefix: "SMS: ",
 			}),
+			conf.SmsSource,
+			smsRoutes,
 		)
 	}
 

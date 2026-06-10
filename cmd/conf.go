@@ -21,6 +21,8 @@ var conf = struct {
 	JwtsGrpcUrl    string `mapstructure:"JWTS_GRPC_URL"`
 	MsJwtsUrl      string `mapstructure:"MS_JWTS_URL"`
 	MsSmsUrl       string `mapstructure:"MS_SMS_URL"`
+	SmsSource      string `mapstructure:"SMS_SOURCE"`
+	SmsRoutes      string `mapstructure:"SMS_ROUTES"`
 	NoSmsCheck     bool   `mapstructure:"NO_SMS_CHECK"`
 }{}
 
