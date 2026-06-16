@@ -1,4 +1,4 @@
-# Auth
+# Account service
 
 ### DB dump:
 
