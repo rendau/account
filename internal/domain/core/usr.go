@@ -116,7 +116,8 @@ func (c *Usr) SendPhoneValidatingCode(ctx context.Context, phone string, errNE b
 	}
 
 	if !c.r.testing {
-		c.r.lg.Infow("Sms sent", "phone", phone, "sms_code", smsCode)
+		// без кода и полного номера: по логу код можно перехватить
+		c.r.lg.Infow("Sms sent", "phone", maskPhone(phone))
 	}
 
 	return nil
