@@ -15,6 +15,8 @@ import (
 
 type JwtI interface {
 	Create(ctx context.Context, sub string, ttl time.Duration, payload any) (string, error)
+	// Validate проверяет подпись и срок токена; claims — json полезной нагрузки.
+	Validate(ctx context.Context, token string) (bool, []byte, error)
 }
 
 type St struct {

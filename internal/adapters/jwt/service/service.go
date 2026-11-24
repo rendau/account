@@ -24,3 +24,12 @@ func (s *Service) Create(ctx context.Context, sub string, ttl time.Duration, pay
 
 	return result, nil
 }
+
+func (s *Service) Validate(ctx context.Context, token string) (bool, []byte, error) {
+	valid, claims, err := s.repo.Validate(ctx, token)
+	if err != nil {
+		return false, nil, fmt.Errorf("repo.Validate: %w", err)
+	}
+
+	return valid, claims, nil
+}

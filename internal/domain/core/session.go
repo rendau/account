@@ -2,16 +2,18 @@ package core
 
 import (
 	"context"
+	"encoding/json"
 	"strconv"
 	"time"
-
-	"github.com/rendau/dop/adapters/jwt"
 
 	"github.com/rendau/account/internal/domain/entities"
 )
 
 const sessionContextKey = "user_session"
 const sessionDur = int64(600) // seconds
+
+// tokenValidateTimeout — сколько ждать ответа jwts при проверке токена.
+const tokenValidateTimeout = 3 * time.Second
 
 type Session struct {
 	r *St
@@ -38,12 +40,31 @@ func (c *Session) GetFromToken(token string) *entities.Session {
 		return result
 	}
 
-	err := jwt.ParsePayload(token, result)
+	// Подпись и срок проверяет jwts: без этого account верил бы любому склеенному токену
+	// (сам он полезную нагрузку только раскодирует), а на него ходят и мимо ruto.
+	ctx, cancel := context.WithTimeout(context.Background(), tokenValidateTimeout)
+	defer cancel()
+
+	valid, claims, err := c.r.jwts.Validate(ctx, token)
 	if err != nil {
-		return &entities.Session{}
+		c.r.lg.Errorw("jwts.Validate", err)
+		return result
+	}
+	if !valid {
+		return result
 	}
 
-	result.Id, _ = strconv.ParseInt(result.Sub, 10, 64)
+	var ses entities.Session
+	if err = json.Unmarshal(claims, &ses); err != nil {
+		return result
+	}
+
+	ses.Id, _ = strconv.ParseInt(ses.Sub, 10, 64)
+	if ses.Id <= 0 {
+		return result
+	}
+
+	result = &ses
 
 	return result
 }
