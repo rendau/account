@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
+	"slices"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/rendau/dop/dopErrs"
@@ -23,21 +25,25 @@ const (
 	unValidateCacheTimeout    = 20 * time.Minute
 	unValidateSmsSendLimit    = 3
 	unValidateSmsSendInterval = 2 * time.Minute
-)
-
-var (
-	smsFreePhones = map[string]int{ // phone and static code, code 0 - mean any code
-		"70000000000": 7456,
-	}
+	// сколько раз можно ввести неверный код, пока жива запись в кэше;
+	// дальше номер закрыт (и для ввода, и для новых смс) до истечения записи
+	unValidateWrongCodeLimit = 5
 )
 
 type Usr struct {
 	r *St
+
+	// Запись в кэше меняется в три шага: прочитать, поправить, записать.
+	// Без замка параллельные запросы читают один и тот же счётчик попыток
+	// и все проходят проверку. Замок действует в пределах одного пода:
+	// при N подах лимит попыток может быть превышен не более чем в N раз.
+	unValidateMu sync.Mutex
 }
 
 type usrUNValidatingCacheSt struct {
 	Codes        []int     `json:"codes"`
 	LastSentTime time.Time `json:"lst"`
+	WrongCount   int       `json:"wc"` // неверных вводов кода
 }
 
 func NewUsr(r *St) *Usr {
@@ -76,43 +82,23 @@ func (c *Usr) SendPhoneValidatingCode(ctx context.Context, phone string, errNE b
 		return nil
 	}
 
-	// check if phone is sms free
-	if _, ok := smsFreePhones[phone]; ok {
-		return nil
-	}
-
-	var cacheValue usrUNValidatingCacheSt
 	var cacheKey = fmt.Sprintf(unValidateCacheKeyTmpl, phone)
-
-	_, err = c.r.cache.GetJsonObj(cacheKey, &cacheValue)
-	if err != nil {
-		return err
-	}
-
-	if len(cacheValue.Codes) >= unValidateSmsSendLimit {
-		return errs.SmsSendLimitReached
-	}
-
-	if cacheValue.LastSentTime.Add(unValidateSmsSendInterval).After(time.Now()) {
-		return errs.SmsSendTooFrequent
-	}
 
 	rand.Seed(time.Now().UTC().UnixNano())
 	smsCode := 1000 + rand.Intn(9000)
+
+	prevSentTime, err := c.reservePhoneValidatingCode(cacheKey, smsCode)
+	if err != nil {
+		return err
+	}
 
 	smsText := fmt.Sprintf("%d — код для %s", smsCode, cns.AppName)
 
 	ok := c.r.sms.Send(phone, smsText)
 	if !ok {
+		c.releasePhoneValidatingCode(cacheKey, smsCode, prevSentTime)
+
 		return errs.SmsSendFail
-	}
-
-	cacheValue.Codes = append(cacheValue.Codes, smsCode)
-	cacheValue.LastSentTime = time.Now()
-
-	err = c.r.cache.SetJsonObj(cacheKey, cacheValue, unValidateCacheTimeout)
-	if err != nil {
-		return err
 	}
 
 	if !c.r.testing {
@@ -123,22 +109,86 @@ func (c *Usr) SendPhoneValidatingCode(ctx context.Context, phone string, errNE b
 	return nil
 }
 
+// reservePhoneValidatingCode проверяет лимиты отправки и под тем же замком
+// сразу записывает код и время отправки — ещё до самой отправки смс. Если
+// писать после отправки, параллельные запросы все видят «смс не уходила»
+// и каждый шлёт свою, в обход лимита и интервала.
+// Возвращает прежнее время отправки: оно нужно для отката, если смс не ушла.
+func (c *Usr) reservePhoneValidatingCode(cacheKey string, smsCode int) (time.Time, error) {
+	c.unValidateMu.Lock()
+	defer c.unValidateMu.Unlock()
+
+	var cacheValue usrUNValidatingCacheSt
+
+	_, err := c.r.cache.GetJsonObj(cacheKey, &cacheValue)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	if cacheValue.WrongCount >= unValidateWrongCodeLimit {
+		return time.Time{}, errs.SmsCheckLimitReached
+	}
+
+	if len(cacheValue.Codes) >= unValidateSmsSendLimit {
+		return time.Time{}, errs.SmsSendLimitReached
+	}
+
+	if cacheValue.LastSentTime.Add(unValidateSmsSendInterval).After(time.Now()) {
+		return time.Time{}, errs.SmsSendTooFrequent
+	}
+
+	prevSentTime := cacheValue.LastSentTime
+
+	cacheValue.Codes = append(cacheValue.Codes, smsCode)
+	cacheValue.LastSentTime = time.Now()
+
+	err = c.r.cache.SetJsonObj(cacheKey, cacheValue, unValidateCacheTimeout)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	return prevSentTime, nil
+}
+
+// releasePhoneValidatingCode откатывает бронь, если смс не ушла: убирает код
+// и возвращает прежнее время отправки, чтобы попытку можно было повторить сразу.
+// Счётчик неверных вводов не трогается.
+func (c *Usr) releasePhoneValidatingCode(cacheKey string, smsCode int, prevSentTime time.Time) {
+	c.unValidateMu.Lock()
+	defer c.unValidateMu.Unlock()
+
+	var cacheValue usrUNValidatingCacheSt
+
+	ok, err := c.r.cache.GetJsonObj(cacheKey, &cacheValue)
+	if err != nil || !ok {
+		return
+	}
+
+	if i := slices.Index(cacheValue.Codes, smsCode); i >= 0 {
+		cacheValue.Codes = slices.Delete(cacheValue.Codes, i, i+1)
+	}
+	cacheValue.LastSentTime = prevSentTime
+
+	// пустая запись не нужна: без неё проверка кода честно ответит «смс не отправлялась»
+	if len(cacheValue.Codes) == 0 && cacheValue.WrongCount == 0 {
+		_ = c.r.cache.Del(cacheKey)
+
+		return
+	}
+
+	_ = c.r.cache.SetJsonObj(cacheKey, cacheValue, unValidateCacheTimeout)
+}
+
 func (c *Usr) CheckPhoneValidatingCode(ctx context.Context, obj *entities.PhoneAndSmsCodeSt) error {
 	if c.r.noSmsCheck {
 		return nil
 	}
 
-	// check if phone is sms free
-	if staticCode, ok := smsFreePhones[obj.Phone]; ok {
-		if staticCode > 0 && obj.SmsCode != staticCode {
-			return errs.WrongSmsCode
-		} else {
-			return nil
-		}
-	}
-
 	var cacheKey = fmt.Sprintf(unValidateCacheKeyTmpl, obj.Phone)
 	var cacheValue usrUNValidatingCacheSt
+
+	c.unValidateMu.Lock()
+	defer c.unValidateMu.Unlock()
 
 	ok, err := c.r.cache.GetJsonObj(cacheKey, &cacheValue)
 	if err != nil {
@@ -148,28 +198,37 @@ func (c *Usr) CheckPhoneValidatingCode(ctx context.Context, obj *entities.PhoneA
 		return errs.SmsHasNotSentToPhone
 	}
 
-	smsCodeFound := false
-	for _, code := range cacheValue.Codes {
-		if code == obj.SmsCode {
-			smsCodeFound = true
-			break
+	// лимит исчерпан: код не сверяем вовсе, даже верный
+	if cacheValue.WrongCount >= unValidateWrongCodeLimit {
+		return errs.SmsCheckLimitReached
+	}
+
+	if slices.Contains(cacheValue.Codes, obj.SmsCode) {
+		return nil
+	}
+
+	// Запись сохраняется заново с полным сроком жизни: блокировка держится
+	// unValidateCacheTimeout от последнего неверного ввода.
+	cacheValue.WrongCount++
+
+	err = c.r.cache.SetJsonObj(cacheKey, cacheValue, unValidateCacheTimeout)
+	if err != nil {
+		return err
+	}
+
+	if cacheValue.WrongCount >= unValidateWrongCodeLimit {
+		if !c.r.testing {
+			c.r.lg.Warnw("Sms code attempts limit reached", "phone", maskPhone(obj.Phone))
 		}
+
+		return errs.SmsCheckLimitReached
 	}
 
-	if !smsCodeFound {
-		return errs.WrongSmsCode
-	}
-
-	return nil
+	return errs.WrongSmsCode
 }
 
 func (c *Usr) RemovePhoneValidatingCache(ctx context.Context, phone string) {
 	if c.r.noSmsCheck {
-		return
-	}
-
-	// check if phone is sms free
-	if _, ok := smsFreePhones[phone]; ok {
 		return
 	}
 

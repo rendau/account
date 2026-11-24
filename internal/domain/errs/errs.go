@@ -21,6 +21,7 @@ const (
 	SmsSendFail                = dopErrs.Err("sms_send_fail")
 	SmsHasNotSentToPhone       = dopErrs.Err("sms_has_not_sent_to_phone")
 	WrongSmsCode               = dopErrs.Err("wrong_sms_code")
+	SmsCheckLimitReached       = dopErrs.Err("sms_check_limit_reached")
 	NameRequired               = dopErrs.Err("name_required")
 	BadName                    = dopErrs.Err("bad_name")
 	AppHasNotPermsUrl          = dopErrs.Err("app_has_not_perms_url")
