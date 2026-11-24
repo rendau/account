@@ -44,3 +44,13 @@ func (r *Repo) Create(ctx context.Context, sub string, ttl time.Duration, payloa
 
 	return repObj.Token, nil
 }
+
+// Validate проверяет подпись и срок токена в jwts. Возвращает признак годности и claims (json).
+func (r *Repo) Validate(ctx context.Context, token string) (bool, []byte, error) {
+	repObj, err := r.client.Validate(ctx, &jwts_v1.JwtValidateReq{Token: token})
+	if err != nil {
+		return false, nil, fmt.Errorf("client.Validate: %w", err)
+	}
+
+	return repObj.Valid, repObj.Claims, nil
+}
